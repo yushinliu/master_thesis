@@ -107,7 +107,7 @@ def get_batch(batch_size,original_size,shrunk_size):
 			y.append(img)"""
 	max_counter = len(train_set)/batch_size
 	counter = batch_index % max_counter
-	print(counter)
+	#print(counter)
 	window = [x for x in range(int(counter)*batch_size,(int(counter)+1)*batch_size)]
 	imgs = [train_set[q] for q in window]
 	x = [scipy.misc.imresize(get_image(q,original_size),(shrunk_size,shrunk_size)) for q in imgs]#scipy.misc.imread(q[0])[q[1][0]*original_size:(q[1][0]+1)*original_size,q[1][1]*original_size:(q[1][1]+1)*original_size].resize(shrunk_size,shrunk_size) for q in imgs]

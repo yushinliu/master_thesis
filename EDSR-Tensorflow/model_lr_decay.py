@@ -1,11 +1,13 @@
 import tensorflow.contrib.slim as slim
 import scipy.misc
 import tensorflow as tf
-from tqdm import tqdm
+#from tqdm import tqdm
+from process_bar import ShowProcess
 import numpy as np
 import shutil
 import utils
 import os
+import time 
 
 """
 An implementation of the neural network used for
@@ -224,10 +226,15 @@ class EDSR(object):
 			
 
 			#This is our training loop
-			for i in tqdm(range(iterations)):
+			process_bar=ShowProcess(iterations)
+			start=time.time()
+			for i in range(iterations):
+				process_bar.show_process()
+				if i % 100 == 0:
+					print("\r the time cost is %f minute"%((time.time()-start)/60))
 				#Use the data function we were passed to get a batch every iteration
 				x,y,batch_index = self.data(*self.args) #execute the get_batch function each iteration(almost 20 batch in one epoch)
-				print("the batch index is ", batch_index)
+				#print("the batch index is ", batch_index)
 				#Create feed dictionary for the batch
 				feed = {
 					self.input:x,
@@ -244,6 +251,7 @@ class EDSR(object):
 				
 				#Write train summary for this step
 				train_writer.add_summary(summary,i)
+			process_bar.close()
 			#Save our trained model		
 			self.save()	
 			train_writer.close() 
