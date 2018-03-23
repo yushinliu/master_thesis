@@ -34,7 +34,6 @@ def load_dataset(data_dir, img_size):
 		try:
 			#print("good")
 			tmp= scipy.misc.imread(data_dir+"//"+img) #read each image
-			print(tmp.shape)
 			x,y,z = tmp.shape
 			coords_x = x / img_size
 			coords_y = y/img_size
@@ -43,11 +42,12 @@ def load_dataset(data_dir, img_size):
 				imgs.append((data_dir+"/"+img,coord))
 		except:
 			print ("oops")
-	test_size = min(10,int( len(imgs)*0.2))
+	test_size = min(100,int( len(imgs)*0.2))
+	print(test_size)
 	random.seed(SEED)
 	random.shuffle(imgs)
 	test_set = imgs[:test_size]
-	train_set = imgs[test_size:][:200]
+	train_set = imgs[test_size:][:800]
 	#return
 	return train_set,test_set
 
