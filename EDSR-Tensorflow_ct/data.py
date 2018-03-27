@@ -15,14 +15,16 @@ random 20% of the images as a test set
 
 data_dir: path to directory containing images
 """
-def load_dataset(data_dir):
+def load_dataset(data_dir,batch_number):
 
 	global train_set 
 	global test_set 
 	global name_set
+	global batch_size
 
 	train_set = {}
 	test_set = {}
+	batch_size = {}
 	name_set = []
 
 	"""
@@ -64,6 +66,11 @@ def load_dataset(data_dir):
 	except:
 		print("test wrong")
 
+	for items in name_set:
+		dataset = train_set[items]
+		batch_size[items] = np.int(len(dataset)/batch_number)
+	print(batch_size)
+
 	return train_set,test_set
 
 """
@@ -86,10 +93,12 @@ def get_test_set(shrunk_size):
 	img = []
 	for items in name_set:
 		img.extend(test_set[items])
+	random.seed(SEED)
+	random.shuffle(img)
 	print(len(img))
 	x = [change_image(scipy.misc.imresize(q,(shrunk_size,shrunk_size))) for q in img]#scipy.misc.imread(q[0])[q[1][0]*original_size:(q[1][0]+1)*original_size,q[1][1]*original_size:(q[1][1]+1)*original_size].resize(shrunk_size,shrunk_size) for q in imgs]
 	y = [change_image(q) for q in img]#scipy.misc.imread(q[0])[q[1][0]*original_size:(q[1][0]+1)*original_size,q[1][1]*original_size:(q[1][1]+1)*original_size] for q in imgs]
-	return x,y
+	return x[:800],y[:800]
 
 def change_image(imgtuple):
 	img = imgtuple[:,:,np.newaxis]
@@ -110,22 +119,12 @@ returns x,y where:
 """
 def get_batch(batch_number,shrunk_size):
 	global batch_index
-	global batch_size
 
 	target_img = []
 	input_img = []
-	batch_size = {}
 
-	i = 0
-
-	if i == 0:
-		for items in name_set:
-			dataset = train_set[items]
-			batch_size[items] = np.int(len(dataset)/batch_number)
-		i += 1
 	
 	counter = batch_index % batch_number
-	print(batch_size)
 	try:
 		if counter < (batch_number-1):
 			for items in name_set:
