@@ -20,18 +20,17 @@ def load_dataset(data_dir,batch_number):
 	global train_set 
 	global test_set 
 	global name_set
+	global batch_size
 
-
-	train_set = []
-	test_set = []
+	train_set = {}
+	test_set = {}
+	batch_size = {}
 	name_set = []
-	SEED = 1
 
 	"""
 	extract the TRIAN data
 
 	"""
-	imgs = {}
 	try:
 		for items in os.listdir(str(data_dir)+"//DATASET-Train-augmented-120"):
 			img_set = []
@@ -43,21 +42,15 @@ def load_dataset(data_dir,batch_number):
 					count +=1
 					img_set.append(scipy.misc.imread(str(data_dir)+"//DATASET-Train-augmented-120//"+str(items)+"//"+str(addr_1)+"//"+str(img)))
 			print(" the "+str(items)+" is "+str(count))
-			random.seed(SEED)
-			random.shuffle(img_set)
-			imgs[items] = img_set[:300]
+			train_set[items] = img_set
 		print("train data extract finsihed")
 	except:
 		print("train wrong")
 
-	for items in name_set:
-		train_set.extend(imgs[items])
-	random.shuffle(train_set)
-
 	"""
 	extract the TEST data
 	"""
-	imgs = {}
+
 	try:
 		for items in os.listdir(str(data_dir)+"//DATASET-Test-120"):
 			img_set=[]
@@ -68,21 +61,15 @@ def load_dataset(data_dir,batch_number):
 					count +=1
 					img_set.append(scipy.misc.imread(str(data_dir)+"//DATASET-Test-120//"+str(items)+"//"+str(addr_1)+"//"+str(img)))
 			print(" the "+str(items)+" is "+str(count))
-			random.seed(SEED)
-			random.shuffle(img_set)
-			imgs[items] = img_set[:30]
+			test_set[items] = img_set
 		print("test data extract finsihed")
 	except:
 		print("test wrong")
-	'''
+
 	for items in name_set:
 		dataset = train_set[items]
 		batch_size[items] = np.int(len(dataset)/batch_number)
 	print(batch_size)
-	'''
-	for items in name_set:
-		test_set.extend(imgs[items])
-	random.shuffle(test_set)
 
 	return train_set,test_set
 
@@ -103,11 +90,15 @@ def get_test_set(shrunk_size):
 			x_img = scipy.misc.imresize(img,(shrunk_size,shrunk_size))
 			y_imgs.append(img)
 			x_imgs.append(x_img)"""
-
-	x = [change_image(scipy.misc.imresize(q,(shrunk_size,shrunk_size))) for q in test_set]
-	y = [change_image(q) for q in test_set]
-
-	return x[:100],y[:100]
+	img = []
+	for items in name_set:
+		img.extend(test_set[items])
+	random.seed(SEED)
+	random.shuffle(img)
+	print(len(img))
+	x = [change_image(scipy.misc.imresize(q,(shrunk_size,shrunk_size))) for q in img]#scipy.misc.imread(q[0])[q[1][0]*original_size:(q[1][0]+1)*original_size,q[1][1]*original_size:(q[1][1]+1)*original_size].resize(shrunk_size,shrunk_size) for q in imgs]
+	y = [change_image(q) for q in img]#scipy.misc.imread(q[0])[q[1][0]*original_size:(q[1][0]+1)*original_size,q[1][1]*original_size:(q[1][1]+1)*original_size] for q in imgs]
+	return x[:1000],y[:1000]
 
 def change_image(imgtuple):
 	img = imgtuple[:,:,np.newaxis]
@@ -126,25 +117,38 @@ returns x,y where:
 	-x is the input set of shape [-1,shrunk_size,shrunk_size,channels]
 	-y is the target set of shape [-1,original_size,original_size,channels]
 """
-def get_batch(batch_size,shrunk_size):
+def get_batch(batch_number,shrunk_size):
 	global batch_index
 
 	target_img = []
 	input_img = []
 
-	max_counter = len(train_set)/batch_size
-	counter = batch_index % max_counter
+	
+	counter = batch_index % batch_number
 	try:
-		imgs = train_set[batch_size*int(counter):batch_size*(int(counter)+1)]
-        	x = [change_image(scipy.misc.imresize(q,(shrunk_size,shrunk_size))) for q in imgs]
-		y = [change_image(q) for q in imgs] 
+		if counter < (batch_number-1):
+			for items in name_set:
+				imgs = train_set[items][batch_size[items]*int(counter):batch_size[items]*(int(counter)+1)]
+				x = [change_image(scipy.misc.imresize(q,(shrunk_size,shrunk_size))) for q in imgs]
+				y = [change_image(q) for q in imgs] 
+			input_img.extend(x)
+			target_img.extend(y)
+		elif counter == batch_number-1:
+			for items in name_set:
+				imgs = train_set[items][batch_size[items]*int(counter):batch_size[items]*(int(counter)+1)]
+				x = [change_image(scipy.misc.imresize(q,(shrunk_size,shrunk_size))) for q in imgs]#scipy.misc.imread(q[0])[q[1][0]*original_size:(q[1][0]+1)*original_size,q[1][1]*original_size:(q[1][1]+1)*original_size].resize(shrunk_size,shrunk_size) for q in imgs]
+				y = [change_image(q) for q in imgs]#scipy.misc.imread(q[0])[q[1][0]*original_size:(q[1][0]+1)*original_size,q[1][1]*original_size:(q[1][1]+1)*original_size] for q in imgs]
+			input_img.extend(x)
+			target_img.extend(y)
 	except:
-		print("wrong")
-
+		if counter <= batch_number -1:
+			print("wrong")
+		else:
+			print("finished")
 
 
 	batch_index = (batch_index+1)% batch_number
-	return x,y,batch_index
+	return input_img,target_img,batch_index
 
 """
 Simple method to crop center of image
