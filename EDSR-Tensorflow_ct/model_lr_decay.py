@@ -188,7 +188,7 @@ class EDSR(object):
 	Train the neural network
 	"""
 
-	def train(self,iterations=10000,save_dir="saved_models"):
+	def train(self,iterations=4000,save_dir="saved_models"):
 		#Removing previous save directory if there is one
 		if os.path.exists(save_dir):
 			shutil.rmtree(save_dir)
@@ -200,7 +200,7 @@ class EDSR(object):
 		#add the decayed learning rate 
 		initial_learning_rate=0.001
 		learning_rate=tf.train.exponential_decay(initial_learning_rate,\
-		global_step=10000,decay_steps=2000,decay_rate=0.9)
+		global_step=4000,decay_steps=1000,decay_rate=0.9)
 
 
 		#Using adam optimizer as mentioned in the paper

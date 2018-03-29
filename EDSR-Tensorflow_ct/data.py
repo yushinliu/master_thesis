@@ -15,7 +15,7 @@ random 20% of the images as a test set
 
 data_dir: path to directory containing images
 """
-def load_dataset(data_dir,batch_number):
+def load_dataset(data_dir):
 
 	global train_set 
 	global test_set 
@@ -45,7 +45,7 @@ def load_dataset(data_dir,batch_number):
 			print(" the "+str(items)+" is "+str(count))
 			random.seed(SEED)
 			random.shuffle(img_set)
-			imgs[items] = img_set[:300]
+			imgs[items] = img_set[:500]
 		print("train data extract finsihed")
 	except:
 		print("train wrong")
@@ -70,7 +70,7 @@ def load_dataset(data_dir,batch_number):
 			print(" the "+str(items)+" is "+str(count))
 			random.seed(SEED)
 			random.shuffle(img_set)
-			imgs[items] = img_set[:30]
+			imgs[items] = img_set[:100]
 		print("test data extract finsihed")
 	except:
 		print("test wrong")
@@ -107,7 +107,7 @@ def get_test_set(shrunk_size):
 	x = [change_image(scipy.misc.imresize(q,(shrunk_size,shrunk_size))) for q in test_set]
 	y = [change_image(q) for q in test_set]
 
-	return x[:100],y[:100]
+	return x,y
 
 def change_image(imgtuple):
 	img = imgtuple[:,:,np.newaxis]
@@ -136,14 +136,12 @@ def get_batch(batch_size,shrunk_size):
 	counter = batch_index % max_counter
 	try:
 		imgs = train_set[batch_size*int(counter):batch_size*(int(counter)+1)]
-        	x = [change_image(scipy.misc.imresize(q,(shrunk_size,shrunk_size))) for q in imgs]
+		x = [change_image(scipy.misc.imresize(q,(shrunk_size,shrunk_size))) for q in imgs]
 		y = [change_image(q) for q in imgs] 
 	except:
 		print("wrong")
 
-
-
-	batch_index = (batch_index+1)% batch_number
+	batch_index = (batch_index+1) % max_counter
 	return x,y,batch_index
 
 """
