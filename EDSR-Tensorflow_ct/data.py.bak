@@ -45,7 +45,7 @@ def load_dataset(data_dir):
 			print(" the "+str(items)+" is "+str(count))
 			random.seed(SEED)
 			random.shuffle(img_set)
-			imgs[items] = img_set[:300]
+			imgs[items] = img_set[:100]
 		print("train data extract finsihed")
 	except:
 		print("train wrong")
@@ -70,7 +70,7 @@ def load_dataset(data_dir):
 			print(" the "+str(items)+" is "+str(count))
 			random.seed(SEED)
 			random.shuffle(img_set)
-			imgs[items] = img_set[:30]
+			imgs[items] = img_set[:20]
 		print("test data extract finsihed")
 	except:
 		print("test wrong")
@@ -163,6 +163,30 @@ def crop_center(img,cropx,cropy):
 	return img[starty:starty+cropy,startx:startx+cropx]
 
 
+def PSNR(input,output):
+    mse=np.sum((input-output)**2)/(input.shape[0]*input.shape[1])
+    psnr=20*np.log10(255.0)-10*np.log10(mse)
+    #print("the psnr is ",psnr)
+    return psnr
 
+def bicubic(get_test_set,shrunk_size,save_dir="saved_models//bicubic.csv"):
+    """
+    calculate the bicubic of test_set
+    """
+    x,y=get_test_set(shrunk_size)
+    psnr_set=[]
+    for index in range(len(x)):
+        img=x[index].reshape(shrunk_size,shrunk_size)
+        output=y[index].reshape(y[index].shape[0],y[index].shape[0])
+        bicubic_img=scipy.misc.imresize(img,(120,120),interp='bicubic')
+        psnr_set.append(PSNR(bicubic_img,output))
+    
+    """
+    save the bicubic result
+    """
+    psnr_set=pd.DataFrame(psnr_set)
+    psnr_set.to_csv(save_dir,index=False)
+    return psnr_set
+    
 
 

@@ -45,7 +45,7 @@ def load_dataset(data_dir):
 			print(" the "+str(items)+" is "+str(count))
 			random.seed(SEED)
 			random.shuffle(img_set)
-			imgs[items] = img_set[:500]
+			imgs[items] = img_set[:100]
 		print("train data extract finsihed")
 	except:
 		print("train wrong")
@@ -70,7 +70,7 @@ def load_dataset(data_dir):
 			print(" the "+str(items)+" is "+str(count))
 			random.seed(SEED)
 			random.shuffle(img_set)
-			imgs[items] = img_set[:100]
+			imgs[items] = img_set[:20]
 		print("test data extract finsihed")
 	except:
 		print("test wrong")
@@ -161,8 +161,6 @@ def crop_center(img,cropx,cropy):
 	print(startx)
 	starty = random.sample(range(y-cropy-1),1)[0]#y//2-(cropy//2)
 	return img[starty:starty+cropy,startx:startx+cropx]
-
-
 
 
 
