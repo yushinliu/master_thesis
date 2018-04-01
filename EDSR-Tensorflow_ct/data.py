@@ -15,7 +15,7 @@ random 20% of the images as a test set
 
 data_dir: path to directory containing images
 """
-def load_dataset(data_dir):
+def load_dataset(data_dir,target=['battery','PCB','BioStone']):
 
 	global train_set 
 	global test_set 
@@ -24,7 +24,7 @@ def load_dataset(data_dir):
 
 	train_set = []
 	test_set = []
-	name_set = []
+	name_set = target
 	SEED = 1
 
 	"""
@@ -33,9 +33,8 @@ def load_dataset(data_dir):
 	"""
 	imgs = {}
 	try:
-		for items in os.listdir(str(data_dir)+"//DATASET-Train-augmented-120"):
+		for items in name_set:
 			img_set = []
-			name_set.append(items)
 			count = 0
 			for addr_1 in os.listdir(str(data_dir)+"//DATASET-Train-augmented-120//"+str(items)):
 				for img in os.listdir(str(data_dir)+"//DATASET-Train-augmented-120//"+str(items)+"//"+str(addr_1)):
@@ -45,7 +44,7 @@ def load_dataset(data_dir):
 			print(" the "+str(items)+" is "+str(count))
 			random.seed(SEED)
 			random.shuffle(img_set)
-			imgs[items] = img_set[:100]
+			imgs[items] = img_set[:7600]
 		print("train data extract finsihed")
 	except:
 		print("train wrong")
@@ -59,7 +58,7 @@ def load_dataset(data_dir):
 	"""
 	imgs = {}
 	try:
-		for items in os.listdir(str(data_dir)+"//DATASET-Test-120"):
+		for items in name_set:
 			img_set=[]
 			count = 0
 			for addr_1 in os.listdir(str(data_dir)+"//DATASET-Test-120//"+str(items)):
@@ -70,7 +69,7 @@ def load_dataset(data_dir):
 			print(" the "+str(items)+" is "+str(count))
 			random.seed(SEED)
 			random.shuffle(img_set)
-			imgs[items] = img_set[:20]
+			imgs[items] = img_set[:100]
 		print("test data extract finsihed")
 	except:
 		print("test wrong")

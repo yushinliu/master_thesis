@@ -27,17 +27,17 @@ def psnr(output_img,input_img,target_img,shrunk_size=60,save_dir="saved_models//
     """
     calculate the bicubic of test_set
     """
-    targe_new_img=target-np.mean(target_img)
+    #targe_new_img=target-np.mean(target_img)
     bicubic_set=[]
     edsr_set=[]
     for index in range(input_img.shape[0]):
         input=input_img[index,:,:,:].reshape(input_img.shape[1],input_img.shape[1])
         output=output_img[index,:,:,:].reshape(output_img.shape[1],output_img.shape[1])
         target=target_img[index,:,:,:].reshape(target_img.shape[1],target_img.shape[1])
-        target_new=target_new_img[index,:,:,:].reshape(target_new_img.shape[1],target_new_img.shape[1])
+        #target_new=target_new_img[index,:,:,:].reshape(target_new_img.shape[1],target_new_img.shape[1])
         bicubic_img=scipy.misc.imresize(input,(120,120),interp='bicubic')
         bicubic_set.append(new_psnr(bicubic_img,target))
-        edsr_set.append(new_psnr(output,target_new))
+        edsr_set.append(new_psnr(output,target))
     print("bicubic_set average is ",np.mean(bicubic_set))
     print("edsr_set average is ",np.mean(edsr_set))
     
