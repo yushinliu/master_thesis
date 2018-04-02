@@ -1,0 +1,49 @@
+import numpy as np
+import pandas as pd
+import scipy
+
+
+
+
+def new_psnr(input,output):
+    
+    mse=np.mean((input-output)**2)
+    psnr = (255**2)/mse
+    psnr = 10 * np.log10(psnr)
+    
+    """
+    x = tf.placeholder(tf.float32,[120,120])
+    y = tf.placeholder(tf.float32,[120,120])
+    mse = tf.reduce_mean(tf.squared_difference(x,y))
+    PSNR = tf.constant(255**2,dtype=tf.float32)/mse
+    PSNR = tf.constant(10,dtype=tf.float32)*utils.log10(PSNR)
+    
+    with tf.Session() as sess:
+        psnr=sess.run(PSNR,feed_dict={x:input,y:output})
+    """
+    return psnr
+
+def psnr(output_img,input_img,target_img,shrunk_size=60,save_dir="saved_models//bicubic.csv"):
+    """
+    calculate the bicubic of test_set
+    """
+    #targe_new_img=target-np.mean(target_img)
+    bicubic_set=[]
+    edsr_set=[]
+    for index in range(input_img.shape[0]):
+        input=input_img[index,:,:,:].reshape(input_img.shape[1],input_img.shape[1])
+        output=output_img[index,:,:,:].reshape(output_img.shape[1],output_img.shape[1])
+        target=target_img[index,:,:,:].reshape(target_img.shape[1],target_img.shape[1])
+        #target_new=target_new_img[index,:,:,:].reshape(target_new_img.shape[1],target_new_img.shape[1])
+        bicubic_img=scipy.misc.imresize(input,(120,120),interp='bicubic')
+        bicubic_set.append(new_psnr(bicubic_img,target))
+        edsr_set.append(new_psnr(output,target))
+    print("bicubic_set average is ",np.mean(bicubic_set))
+    print("edsr_set average is ",np.mean(edsr_set))
+    
+    """
+    save the bicubic result
+    """
+    psnr_set=pd.DataFrame({'bicubic':bicubic_set,'edsr':edsr_set})
+    psnr_set.to_csv(save_dir,index=False)
+    return psnr_set

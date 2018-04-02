@@ -21,6 +21,7 @@ super-resolution of images as described in:
 class EDSR(object):
 
 	def __init__(self,img_size=32,num_layers=32,feature_size=256,scale=2,output_channels=1):
+		tf.reset_default_graph()
 		print("Building EDSR...")
 		self.img_size = img_size
 		self.scale = scale
