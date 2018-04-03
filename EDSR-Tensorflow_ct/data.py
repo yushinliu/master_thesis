@@ -44,7 +44,7 @@ def load_dataset(data_dir,target=['battery','PCB','BioStone']):
 			print(" the "+str(items)+" is "+str(count))
 			random.seed(SEED)
 			random.shuffle(img_set)
-			imgs[items] = img_set[:300]
+			imgs[items] = img_set[:500]
 		print("train data extract finsihed")
 	except:
 		print("train wrong")

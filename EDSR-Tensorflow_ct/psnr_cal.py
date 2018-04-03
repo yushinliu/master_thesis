@@ -38,6 +38,10 @@ def psnr(output_img,input_img,target_img,shrunk_size=60,save_dir="saved_models//
         bicubic_img=scipy.misc.imresize(input,(120,120),interp='bicubic')
         bicubic_set.append(new_psnr(bicubic_img,target))
         edsr_set.append(new_psnr(output,target))
+    bicubic_mean=np.mean(bicubic_set)
+    edsr_mean=np.mean(edsr_set)
+    bicubic_set.append(bicubic_mean)
+    edsr_set.append(edsr_mean)
     print("bicubic_set average is ",np.mean(bicubic_set))
     print("edsr_set average is ",np.mean(edsr_set))
     

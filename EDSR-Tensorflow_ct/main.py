@@ -11,7 +11,7 @@ network.train()
 '''
 #os.environ['CUDA_VISIBLE_DEVICES'] ='0,1'
 load_dataset("/home/liuyn/masterthesis/master_thesis/dataset") #arg: (dir,batch_number)
-for bs in [8,10,12,14,16]: #gridsearch in different batch size
+for bs in [10,20,30,40]: #gridsearch in different batch size
 	batch_index = 0
 	print("batch size is ",bs)
 	network=EDSR(60,16,64,2) #ONE BASELINE
