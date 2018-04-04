@@ -2,7 +2,7 @@ import numpy as np
 import pandas as pd
 import scipy
 import cv2
-
+import os
 
 
 
@@ -31,16 +31,19 @@ def psnr(output_img,input_img,target_img,shrunk_size=60,save_dir="saved_models")
     #targe_new_img=target-np.mean(target_img)
     bicubic_set=[]
     edsr_set=[]
+    os.makedirs(save_dir+"//image//input")
+    os.makedirs(save_dir+"//image//output")
+    os.makedirs(save_dir+"//image//target")
     for index in range(input_img.shape[0]):
         input=input_img[index,:,:,:].reshape(input_img.shape[1],input_img.shape[1])
-		cv2.imwrite(save_dir+"image//input//"+str(index+2)+".png",input)
-		output=output_img[index,:,:,:].reshape(output_img.shape[1],output_img.shape[1])
-		cv2.imwrite(save_dir+"image//output//"+str(index+2)+".png",output)
-		target=target_img[index,:,:,:].reshape(target_img.shape[1],target_img.shape[1])
-		cv2.imwrite(save_dir+"image//target//"+str(index+2)+".png",target)
+        cv2.imwrite(save_dir+"//image//input//"+str(index+2)+".png",input)
+        output=output_img[index,:,:,:].reshape(output_img.shape[1],output_img.shape[1])
+        cv2.imwrite(save_dir+"//image//output//"+str(index+2)+".png",output)
+        target=target_img[index,:,:,:].reshape(target_img.shape[1],target_img.shape[1])
+        cv2.imwrite(save_dir+"//image//target//"+str(index+2)+".png",target)
         #target_new=target_new_img[index,:,:,:].reshape(target_new_img.shape[1],target_new_img.shape[1])
         #bicubic_img=scipy.misc.imresize(input,(120,120),interp='bicubic')
-		bicubic_img=cv2.resize(input,(120,120),interpolation=cv2.INTER_CUBIC)
+        bicubic_img=cv2.resize(input,(120,120),interpolation=cv2.INTER_CUBIC)
         bicubic_set.append(new_psnr(bicubic_img,target))
         edsr_set.append(new_psnr(output,target))
     bicubic_mean=np.mean(bicubic_set)
