@@ -3,7 +3,7 @@ import pandas as pd
 import scipy
 import cv2
 import os
-
+import seaborn as sns
 
 
 def new_psnr(input,output):
@@ -50,6 +50,8 @@ def psnr(output_img,input_img,target_img,shrunk_size=60,save_dir="saved_models")
     edsr_mean=np.mean(edsr_set)
     bicubic_set.append(bicubic_mean)
     edsr_set.append(edsr_mean)
+
+
     print("bicubic_set average is ",np.mean(bicubic_set))
     print("edsr_set average is ",np.mean(edsr_set))
     
@@ -59,3 +61,12 @@ def psnr(output_img,input_img,target_img,shrunk_size=60,save_dir="saved_models")
     psnr_set=pd.DataFrame({'bicubic':bicubic_set,'edsr':edsr_set})
     psnr_set.to_csv(save_dir+"//psnr_result.csv",index=False)
     return psnr_set
+
+def dist_diagram(psnr_set,save_dir="saved_models"):
+	new_table=psnr_set['edsr'] - psnr_set['bicubic']
+	image=sns.distplot(new_table,rug=True)
+	plt.xlabel("difference between edsr and bicubic")
+	plt.ylabel("ratio")
+	fig=image.get_figure()
+	fig.savefig(save_dir+"//image//hist.png")
+
