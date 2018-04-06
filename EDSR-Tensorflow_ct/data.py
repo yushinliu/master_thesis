@@ -36,11 +36,11 @@ def load_dataset(data_dir,target=['battery','PCB','BioStone']):
 		for items in name_set:
 			img_set = []
 			count = 0
-			for addr_1 in os.listdir(str(data_dir)+"//DATASET-Train-augmented-120//"+str(items)):
-				for img in os.listdir(str(data_dir)+"//DATASET-Train-augmented-120//"+str(items)+"//"+str(addr_1)):
+			for img in os.listdir(str(data_dir)+"//DATASET-Train-augmented-120//new_set//"+str(items)):
+			#	for img in os.listdir(str(data_dir)+"//DATASET-Train-augmented-120//"+str(items)+"//"+str(addr_1)):
 					#print("img",img)
-					count +=1
-					img_set.append(scipy.misc.imread(str(data_dir)+"//DATASET-Train-augmented-120//"+str(items)+"//"+str(addr_1)+"//"+str(img)))
+				count +=1
+				img_set.append(scipy.misc.imread(str(data_dir)+"//DATASET-Train-augmented-120//new_set//"+str(items)+"//"+str(img)))
 			print(" the "+str(items)+" is "+str(count))
 			random.seed(SEED)
 			random.shuffle(img_set)
@@ -61,11 +61,11 @@ def load_dataset(data_dir,target=['battery','PCB','BioStone']):
 		for items in name_set:
 			img_set=[]
 			count = 0
-			for addr_1 in os.listdir(str(data_dir)+"//DATASET-Test-120//"+str(items)):
-				for img in os.listdir(str(data_dir)+"//DATASET-Test-120//"+str(items)+"//"+str(addr_1)):
+			for img in os.listdir(str(data_dir)+"//DATASET-Test-120//new_set//"+str(items)):
+			#	for img in os.listdir(str(data_dir)+"//DATASET-Test-120//"+str(items)+"//"+str(addr_1)):
 					#print("img",img)
-					count +=1
-					img_set.append(scipy.misc.imread(str(data_dir)+"//DATASET-Test-120//"+str(items)+"//"+str(addr_1)+"//"+str(img)))
+				count +=1
+				img_set.append(scipy.misc.imread(str(data_dir)+"//DATASET-Test-120//new_set//"+str(items)+"//"+str(img)))
 			print(" the "+str(items)+" is "+str(count))
 			random.seed(SEED)
 			random.shuffle(img_set)
