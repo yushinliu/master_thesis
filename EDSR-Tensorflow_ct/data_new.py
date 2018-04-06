@@ -41,8 +41,10 @@ def load_dataset(data_dir,batch_number):
 					#print("img",img)
 					count +=1
 					img_set.append(scipy.misc.imread(str(data_dir)+"//DATASET-Train-augmented-120//"+str(items)+"//"+str(addr_1)+"//"+str(img)))
-			print(" the "+str(items)+" is "+str(count))
-			train_set[items] = img_set
+			print(" the "+str(items)+" is "+str(int(count/10)))
+			random.seed(1)
+			random.shuffle(img_set)
+			train_set[items] = img_set[:int(count/10)]
 		print("train data extract finsihed")
 	except:
 		print("train wrong")
@@ -61,7 +63,9 @@ def load_dataset(data_dir,batch_number):
 					count +=1
 					img_set.append(scipy.misc.imread(str(data_dir)+"//DATASET-Test-120//"+str(items)+"//"+str(addr_1)+"//"+str(img)))
 			print(" the "+str(items)+" is "+str(count))
-			test_set[items] = img_set
+			random.seed(1)
+			random.shuffle(img_set)
+			test_set[items] = img_set[:200]
 		print("test data extract finsihed")
 	except:
 		print("test wrong")
@@ -98,7 +102,7 @@ def get_test_set(shrunk_size):
 	print(len(img))
 	x = [change_image(scipy.misc.imresize(q,(shrunk_size,shrunk_size))) for q in img]#scipy.misc.imread(q[0])[q[1][0]*original_size:(q[1][0]+1)*original_size,q[1][1]*original_size:(q[1][1]+1)*original_size].resize(shrunk_size,shrunk_size) for q in imgs]
 	y = [change_image(q) for q in img]#scipy.misc.imread(q[0])[q[1][0]*original_size:(q[1][0]+1)*original_size,q[1][1]*original_size:(q[1][1]+1)*original_size] for q in imgs]
-	return x[:1000],y[:1000]
+	return x,y
 
 def change_image(imgtuple):
 	img = imgtuple[:,:,np.newaxis]

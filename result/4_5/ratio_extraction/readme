@@ -1,0 +1,8 @@
+test_lr_iter_5000_decaysteps_300_decay_rate_0.9
+train: the battery is 767                                                                                                                                                                                                                                                   
+ the BioStone is 5330                                                                                                                                                                                                                                                 
+ the PCB is 8712   
+ test:200*3
+batch_size:{'battery': 7, 'BioStone': 53, 'PCB': 87}
+layer : 16
+channel : 64

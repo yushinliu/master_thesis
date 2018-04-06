@@ -116,7 +116,7 @@ class EDSR(object):
 		#tf.summary.image("output_image_noconv",tf.cast(self.out_noconv,tf.uint8))
 		
 		#Tensorflow graph setup... session, saver, etc.
-		self.sess = tf.Session(config=tf.ConfigProto(allow_soft_placement=True,log_device_placement=True)) # allow_soft_placement : allow to change the instrument if not exist
+		self.sess = tf.Session()#config=tf.ConfigProto(allow_soft_placement=True,log_device_placement=True)) # allow_soft_placement : allow to change the instrument if not exist
 		self.saver = tf.train.Saver()
 		print("Done building!")
 	
