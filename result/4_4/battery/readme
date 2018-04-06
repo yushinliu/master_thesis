@@ -1,5 +1,0 @@
-test_lr_iter_5000_decaysteps_300_decay_rate_0.9
-train:800 test:200
-batch_size:10
-layer : 8
-channel : 64
