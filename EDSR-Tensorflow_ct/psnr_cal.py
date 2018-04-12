@@ -5,6 +5,11 @@ import cv2
 import os
 import seaborn as sns
 
+import matplotlib
+matplotlib.use('Agg')
+import matplotlib.pyplot as plt
+
+
 
 def new_psnr(input,output):
     
@@ -69,4 +74,5 @@ def dist_diagram(psnr_set,save_dir="saved_models"):
 	plt.ylabel("ratio")
 	fig=image.get_figure()
 	fig.savefig(save_dir+"//image//hist.png")
+	fig.clf()
 

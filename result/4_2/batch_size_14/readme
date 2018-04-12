@@ -1,7 +1,0 @@
-test_lr_iter_3000_decaysteps_300_decay_rate_0.9
-train:300*3 test:100*3
-batch_size:14
-
-
-
-

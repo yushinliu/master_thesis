@@ -1,5 +1,0 @@
-test_lr_iter_3000_decaysteps_300_decay_rate_0.9
-train:300*3 test:60*3
-batch_size:10
-bicubic_set average is  19.250569167241693                                                                                                                                                                                                                            
-edsr_set average is  38.042272414309934  
