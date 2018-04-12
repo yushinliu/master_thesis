@@ -14,8 +14,7 @@ network.train()
 
 for dataset in ['battery','PCB','BioStone']: #gridsearch in different batch size
         
-	#load_dataset("/home/liuyn/masterthesis/master_thesis/dataset",target=[dataset]) #arg: (dir,batch_number)
-	load_dataset("D://LAB//master_thesis//dataset",target=[dataset])
+	load_dataset("/home/liuyn/masterthesis/master_thesis/dataset",target=[dataset]) #arg: (dir,batch_number)
         
 	batch_index = 0
 	print("dataset is ",dataset)

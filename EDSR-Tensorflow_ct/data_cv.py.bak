@@ -46,7 +46,7 @@ def load_dataset(data_dir,target=['battery','PCB','BioStone']):
 
 	for items in name_set:
 		dataset.extend(imgs[items])
-	random.shuffle(dataset)
+	random.shuffle(dataset_set)
 
 	return dataset
 
