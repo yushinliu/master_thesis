@@ -197,99 +197,99 @@ class EDSR(object):
 	"""
 
 	def train(self,decay_steps=1000,decay_rate=0.9,iterations=4000,save_dir="saved_models"):
-	for i in range(5):
-		with tf.device('/gpu:%d' %i ):
-			with tf.name_scope('crossvalidation%d' %i):
-		#Removing previous save directory if there is one
-				if os.path.exists(save_dir):
-					shutil.rmtree(save_dir)
-				#Make new save directory
-				os.mkdir(save_dir)
-				#Just a tf thing, to merge all summaries into one
-				merged = tf.summary.merge_all()
+		for i in range(5):
+			with tf.device('/gpu:%d' %i ):
+				with tf.name_scope('crossvalidation%d' %i):
+			#Removing previous save directory if there is one
+					if os.path.exists(save_dir):
+						shutil.rmtree(save_dir)
+					#Make new save directory
+					os.mkdir(save_dir)
+					#Just a tf thing, to merge all summaries into one
+					merged = tf.summary.merge_all()
 
-				#add the decayed learning rate 
-				initial_learning_rate=0.001
-				learning_rate=tf.train.exponential_decay(initial_learning_rate,\
-				global_step=iterations,decay_steps=decay_steps,decay_rate=decay_rate)
+					#add the decayed learning rate 
+					initial_learning_rate=0.001
+					learning_rate=tf.train.exponential_decay(initial_learning_rate,\
+					global_step=iterations,decay_steps=decay_steps,decay_rate=decay_rate)
 
 
-				#Using adam optimizer as mentioned in the paper
-				optimizer = tf.train.AdamOptimizer(learning_rate)
-				#This is the train operation for our objective
-				train_op = optimizer.minimize(self.loss)	
-				#Operation to initialize all variables
-	init = tf.global_variables_initializer()
-	print("Begin training...")
-	with self.sess as sess:
-		
+					#Using adam optimizer as mentioned in the paper
+					optimizer = tf.train.AdamOptimizer(learning_rate)
+					#This is the train operation for our objective
+					train_op = optimizer.minimize(self.loss)	
+					#Operation to initialize all variables
+		init = tf.global_variables_initializer()
+		print("Begin training...")
+		with self.sess as sess:
+			
 
-		#Initialize all variables
-		sess.run(init)
-		test_exists = self.test_data
-		#create summary writer for train
-		train_writer = tf.summary.FileWriter(save_dir+"/train"+"_lr_iter_"+str(iterations)+"_decaysteps_"+str(decay_steps)+"_decay_rate_"+str(decay_rate),sess.graph)
+			#Initialize all variables
+			sess.run(init)
+			test_exists = self.test_data
+			#create summary writer for train
+			train_writer = tf.summary.FileWriter(save_dir+"/train"+"_lr_iter_"+str(iterations)+"_decaysteps_"+str(decay_steps)+"_decay_rate_"+str(decay_rate),sess.graph)
 
-		#If we're using a test set, include another summary writer for that
-		
-		if test_exists:
-			test_writer = tf.summary.FileWriter(save_dir+"/test"+"_lr_iter_"+str(iterations)+"_decaysteps_"+str(decay_steps)+"_decay_rate_"+str(decay_rate),sess.graph)
-			test_x,test_y = self.test_data(self.test_args)
-			test_feed = {					
-				'crossvalidation0/x':test_x[0],
-				'crossvalidation1/x':test_x[1],
-				'crossvalidation2/x':test_x[2],
-				'crossvalidation3/x':test_x[3],
-				'crossvalidation4/x':test_x[4],
-				'crossvalidation0/y':test_y[0],
-				'crossvalidation0/y':test_y[1],
-				'crossvalidation0/y':test_y[2],
-				'crossvalidation0/y':test_y[3],
-				'crossvalidation0/y':test_y[4]
-				}
-		
-
-		#This is our training loop
-		process_bar=ShowProcess(iterations)
-		start=time.time()
-		for i in range(iterations):
-			process_bar.show_process()
-			if i % 500 == 0:
-				print("\r the time cost is %f minute"%((time.time()-start)/60))
-			#Use the data function we were passed to get a batch every iteration
-			x,y,batch_index = self.data(*self.args) #execute the get_batch function each iteration(almost 20 batch in one epoch)
-			#print("the batch index is ", batch_index)
-			#Create feed dictionary for the batch
-			feed = {
-				'crossvalidation0/x':x[0],
-				'crossvalidation1/x':x[1],
-				'crossvalidation2/x':x[2],
-				'crossvalidation3/x':x[3],
-				'crossvalidation4/x':x[4],
-				'crossvalidation0/y':y[0],
-				'crossvalidation0/y':y[1],
-				'crossvalidation0/y':y[2],
-				'crossvalidation0/y':y[3],
-				'crossvalidation0/y':y[4]
-
-			}
-			#Run the train op and calculate the train summary
-			summary,_ = sess.run([merged,train_op],feed)
-			#If we're testing, don't train on test set. But do calculate summary
+			#If we're using a test set, include another summary writer for that
 			
 			if test_exists:
-				t_summary = sess.run(merged,test_feed)
-				output_img= sess.run(self.out,test_feed)
-				input_img=sess.run(self.input,test_feed)
-				target_img=sess.run(self.target,test_feed)
-				#Write test summary
-				test_writer.add_summary(t_summary,i)
+				test_writer = tf.summary.FileWriter(save_dir+"/test"+"_lr_iter_"+str(iterations)+"_decaysteps_"+str(decay_steps)+"_decay_rate_"+str(decay_rate),sess.graph)
+				test_x,test_y = self.test_data(self.test_args)
+				test_feed = {					
+					'crossvalidation0/x':test_x[0],
+					'crossvalidation1/x':test_x[1],
+					'crossvalidation2/x':test_x[2],
+					'crossvalidation3/x':test_x[3],
+					'crossvalidation4/x':test_x[4],
+					'crossvalidation0/y':test_y[0],
+					'crossvalidation0/y':test_y[1],
+					'crossvalidation0/y':test_y[2],
+					'crossvalidation0/y':test_y[3],
+					'crossvalidation0/y':test_y[4]
+					}
 			
-			#Write train summary for this step
-			train_writer.add_summary(summary,i)
-		process_bar.close()
-		#Save our trained model		
-		self.save()	
-		train_writer.close() 
-		test_writer.close()
-		return input_img,target_img,output_img
+
+			#This is our training loop
+			process_bar=ShowProcess(iterations)
+			start=time.time()
+			for i in range(iterations):
+				process_bar.show_process()
+				if i % 500 == 0:
+					print("\r the time cost is %f minute"%((time.time()-start)/60))
+				#Use the data function we were passed to get a batch every iteration
+				x,y,batch_index = self.data(*self.args) #execute the get_batch function each iteration(almost 20 batch in one epoch)
+				#print("the batch index is ", batch_index)
+				#Create feed dictionary for the batch
+				feed = {
+					'crossvalidation0/x':x[0],
+					'crossvalidation1/x':x[1],
+					'crossvalidation2/x':x[2],
+					'crossvalidation3/x':x[3],
+					'crossvalidation4/x':x[4],
+					'crossvalidation0/y':y[0],
+					'crossvalidation0/y':y[1],
+					'crossvalidation0/y':y[2],
+					'crossvalidation0/y':y[3],
+					'crossvalidation0/y':y[4]
+
+				}
+				#Run the train op and calculate the train summary
+				summary,_ = sess.run([merged,train_op],feed)
+				#If we're testing, don't train on test set. But do calculate summary
+				
+				if test_exists:
+					t_summary = sess.run(merged,test_feed)
+					output_img= sess.run(self.out,test_feed)
+					input_img=sess.run(self.input,test_feed)
+					target_img=sess.run(self.target,test_feed)
+					#Write test summary
+					test_writer.add_summary(t_summary,i)
+				
+				#Write train summary for this step
+				train_writer.add_summary(summary,i)
+			process_bar.close()
+			#Save our trained model		
+			self.save()	
+			train_writer.close() 
+			test_writer.close()
+			return input_img,target_img,output_img
