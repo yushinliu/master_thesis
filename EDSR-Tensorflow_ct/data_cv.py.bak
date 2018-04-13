@@ -2,6 +2,7 @@ import scipy.misc
 import random
 import numpy as np
 import os
+from sklearn.model_selection import KFold
 
 train_set = []
 test_set = []
@@ -16,8 +17,12 @@ random 20% of the images as a test set
 data_dir: path to directory containing images
 """
 def load_dataset(data_dir,target=['battery','PCB','BioStone']):
+	global dataset
+	global train_set
+	global test_set
 
-
+	train_set=[]
+	test_set=[]
 	dataset = []
 	name_set = target
 	SEED = 1
@@ -46,9 +51,21 @@ def load_dataset(data_dir,target=['battery','PCB','BioStone']):
 
 	for items in name_set:
 		dataset.extend(imgs[items])
-	random.shuffle(dataset_set)
+	random.shuffle(dataset)
 
-	return dataset
+	"""
+	generate the cross-validation set
+	"""
+	kf = KFold(n_splits = 5, random_state= SEED)
+	kf.get_n_splits(dataset)
+
+	for train_index,test_index in kf.split(dataset):
+		#print(train_index,test_index)
+		X_train,X_test= np.array(dataset)[train_index],np.array(dataset)[test_index]  #list can not directly read list index, array can
+		train_set.append(X_train)
+		test_set.append(X_test)
+
+	return train_set,test_set
 
 """
 Get test set from the loaded dataset
@@ -92,6 +109,11 @@ returns x,y where:
 """
 def get_batch(batch_size,shrunk_size):
 	global batch_index
+	batch_index = [0,0,0,0,0]
+	'''
+	extract the crossvalidation train and test set
+	'''
+
 
 	target_img = []
 	input_img = []

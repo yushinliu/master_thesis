@@ -2,6 +2,7 @@ import scipy.misc
 import random
 import numpy as np
 import os
+from sklearn.model_selection import KFold
 
 train_set = []
 test_set = []
@@ -16,8 +17,12 @@ random 20% of the images as a test set
 data_dir: path to directory containing images
 """
 def load_dataset(data_dir,target=['battery','PCB','BioStone']):
+	global dataset
+	global train_set
+	global test_set
 
-
+	train_set=[]
+	test_set=[]
 	dataset = []
 	name_set = target
 	SEED = 1
@@ -48,7 +53,19 @@ def load_dataset(data_dir,target=['battery','PCB','BioStone']):
 		dataset.extend(imgs[items])
 	random.shuffle(dataset)
 
-	return dataset
+	"""
+	generate the cross-validation set
+	"""
+	kf = KFold(n_splits = 5, random_state= SEED)
+	kf.get_n_splits(dataset)
+
+	for train_index,test_index in kf.split(dataset):
+		#print(train_index,test_index)
+		X_train,X_test= np.array(dataset)[train_index],np.array(dataset)[test_index]  #list can not directly read list index, array can
+		train_set.append(X_train)
+		test_set.append(X_test)
+
+	return train_set,test_set
 
 """
 Get test set from the loaded dataset
@@ -67,11 +84,15 @@ def get_test_set(shrunk_size):
 			x_img = scipy.misc.imresize(img,(shrunk_size,shrunk_size))
 			y_imgs.append(img)
 			x_imgs.append(x_img)"""
+	x_set=[]
+	y_set=[]
+	for dataset in test_set:
+		x = [change_image(scipy.misc.imresize(q,(shrunk_size,shrunk_size))) for q in dataset]
+		x_set.append(x)
+		y = [change_image(q) for q in test_set]
+		y_set.append(y)
 
-	x = [change_image(scipy.misc.imresize(q,(shrunk_size,shrunk_size))) for q in test_set]
-	y = [change_image(q) for q in test_set]
-
-	return x,y
+	return x_set,y_set
 
 def change_image(imgtuple):
 	img = imgtuple[:,:,np.newaxis]
@@ -92,21 +113,29 @@ returns x,y where:
 """
 def get_batch(batch_size,shrunk_size):
 	global batch_index
+	batch_index = 0
+	'''
+	extract the crossvalidation train and test set
+	'''
+	x_set=[]
+	y_set=[]
+	max_counter = len(train_set[0])/batch_size
+	for dataset in train_set:
+		target_img = []
+		input_img = []
 
-	target_img = []
-	input_img = []
-
-	max_counter = len(train_set)/batch_size
-	counter = batch_index % max_counter
-	try:
-		imgs = train_set[batch_size*int(counter):batch_size*(int(counter)+1)]
-		x = [change_image(scipy.misc.imresize(q,(shrunk_size,shrunk_size))) for q in imgs]
-		y = [change_image(q) for q in imgs] 
-	except:
-		print("wrong")
+		counter = batch_index % max_counter
+		try:
+			imgs = dataset_set[batch_size*int(counter):batch_size*(int(counter)+1)]
+			x = [change_image(scipy.misc.imresize(q,(shrunk_size,shrunk_size))) for q in imgs]
+			x_set.append(x)
+			y = [change_image(q) for q in imgs] 
+			y_set.append(y)
+		except:
+			print("wrong")
 
 	batch_index = (batch_index+1) % max_counter
-	return x,y,batch_index
+	return x_set,y_set,batch_index
 
 """
 Simple method to crop center of image
