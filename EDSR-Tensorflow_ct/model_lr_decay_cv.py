@@ -242,10 +242,10 @@ class EDSR(object):
 					'crossvalidation3/x:0':np.array(test_x[3]),
 					'crossvalidation4/x:0':np.array(test_x[4]),
 					'crossvalidation0/y:0':np.array(test_y[0]),
-					'crossvalidation0/y:0':np.array(test_y[1]),
-					'crossvalidation0/y:0':np.array(test_y[2]),
-					'crossvalidation0/y:0':np.array(test_y[3]),
-					'crossvalidation0/y:0':np.array(test_y[4])
+					'crossvalidation1/y:0':np.array(test_y[1]),
+					'crossvalidation2/y:0':np.array(test_y[2]),
+					'crossvalidation3/y:0':np.array(test_y[3]),
+					'crossvalidation4/y:0':np.array(test_y[4])
 					}
 			
 
@@ -267,10 +267,10 @@ class EDSR(object):
 					'crossvalidation3/x:0':np.array(x[3]),
 					'crossvalidation4/x:0':np.array(x[4]),
 					'crossvalidation0/y:0':np.array(y[0]),
-					'crossvalidation0/y:0':np.array(y[1]),
-					'crossvalidation0/y:0':np.array(y[2]),
-					'crossvalidation0/y:0':np.array(y[3]),
-					'crossvalidation0/y:0':np.array(y[4])
+					'crossvalidation1/y:0':np.array(y[1]),
+					'crossvalidation2/y:0':np.array(y[2]),
+					'crossvalidation3/y:0':np.array(y[3]),
+					'crossvalidation4/y:0':np.array(y[4])
 
 				}
 				#Run the train op and calculate the train summary

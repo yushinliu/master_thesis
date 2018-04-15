@@ -236,16 +236,16 @@ class EDSR(object):
 				test_writer = tf.summary.FileWriter(save_dir+"/test"+"_lr_iter_"+str(iterations)+"_decaysteps_"+str(decay_steps)+"_decay_rate_"+str(decay_rate),sess.graph)
 				test_x,test_y = self.test_data(self.test_args)
 				test_feed = {					
-					'crossvalidation0/x:0':test_x[0],
-					'crossvalidation1/x:0':test_x[1],
-					'crossvalidation2/x:0':test_x[2],
-					'crossvalidation3/x:0':test_x[3],
-					'crossvalidation4/x:0':test_x[4],
-					'crossvalidation0/y:0':test_y[0],
-					'crossvalidation0/y:0':test_y[1],
-					'crossvalidation0/y:0':test_y[2],
-					'crossvalidation0/y:0':test_y[3],
-					'crossvalidation0/y:0':test_y[4]
+					'crossvalidation0/x:0':np.array(test_x[0]),
+					'crossvalidation1/x:0':np.array(test_x[1]),
+					'crossvalidation2/x:0':np.array(test_x[2]),
+					'crossvalidation3/x:0':np.array(test_x[3]),
+					'crossvalidation4/x:0':np.array(test_x[4]),
+					'crossvalidation0/y:0':np.array(test_y[0]),
+					'crossvalidation0/y:0':np.array(test_y[1]),
+					'crossvalidation0/y:0':np.array(test_y[2]),
+					'crossvalidation0/y:0':np.array(test_y[3]),
+					'crossvalidation0/y:0':np.array(test_y[4])
 					}
 			
 
@@ -261,16 +261,16 @@ class EDSR(object):
 				#print("the batch index is ", batch_index)
 				#Create feed dictionary for the batch
 				feed = {
-					'crossvalidation0/x:0':x[0],
-					'crossvalidation1/x:0':x[1],
-					'crossvalidation2/x:0':x[2],
-					'crossvalidation3/x:0':x[3],
-					'crossvalidation4/x:0':x[4],
-					'crossvalidation0/y:0':y[0],
-					'crossvalidation0/y:0':y[1],
-					'crossvalidation0/y:0':y[2],
-					'crossvalidation0/y:0':y[3],
-					'crossvalidation0/y:0':y[4]
+					'crossvalidation0/x:0':np.array(x[0]),
+					'crossvalidation1/x:0':np.array(x[1]),
+					'crossvalidation2/x:0':np.array(x[2]),
+					'crossvalidation3/x:0':np.array(x[3]),
+					'crossvalidation4/x:0':np.array(x[4]),
+					'crossvalidation0/y:0':np.array(y[0]),
+					'crossvalidation0/y:0':np.array(y[1]),
+					'crossvalidation0/y:0':np.array(y[2]),
+					'crossvalidation0/y:0':np.array(y[3]),
+					'crossvalidation0/y:0':np.array(y[4])
 
 				}
 				#Run the train op and calculate the train summary
