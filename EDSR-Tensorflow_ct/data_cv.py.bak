@@ -126,7 +126,7 @@ def get_batch(batch_size,shrunk_size):
 
 		counter = batch_index % max_counter
 		try:
-			imgs = dataset_set[batch_size*int(counter):batch_size*(int(counter)+1)]
+			imgs = dataset[batch_size*int(counter):batch_size*(int(counter)+1)]
 			x = [change_image(scipy.misc.imresize(q,(shrunk_size,shrunk_size))) for q in imgs]
 			x_set.append(x)
 			y = [change_image(q) for q in imgs] 
