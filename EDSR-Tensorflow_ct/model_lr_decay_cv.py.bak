@@ -250,7 +250,7 @@ class EDSR(object):
 			
 
 			#This is our training loop
-			process_bar=ShowProcess(iterations)a
+			process_bar=ShowProcess(iterations)
 			start=time.time()
 			for i in range(iterations):
 				process_bar.show_process()
