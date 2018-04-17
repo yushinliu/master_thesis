@@ -1,5 +1,5 @@
 from model_lr_decay_cv import EDSR
-from data import load_dataset,crop_center,get_batch,get_test_set
+from data_cv import load_dataset,crop_center,get_batch,get_test_set
 from psnr_cal import psnr,new_psnr,dist_diagram
 import os
 

@@ -20,7 +20,7 @@ super-resolution of images as described in:
 """
 class EDSR(object):
 
-	def __init__(self,img_size=32,num_layers=32,feature_size=256,scale=2,output_channels=1):
+	def __init__(self,img_size=32,num_layers=32,feature_size=256,scale=2,decay_steps=1000,decay_rate=0.9,iterations=4000,output_channels=1):
 		tf.reset_default_graph()
 		print("Building EDSR...")
 		for i in range(5):
@@ -208,7 +208,7 @@ class EDSR(object):
 	Train the neural network
 	"""
 
-	def train(self,decay_steps=1000,decay_rate=0.9,iterations=4000,save_dir="saved_models"):
+	def train(self,save_dir="saved_models"):
 		#Removing previous save directory if there is one
 		if os.path.exists(save_dir):
 			shutil.rmtree(save_dir)

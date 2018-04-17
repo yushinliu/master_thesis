@@ -209,16 +209,13 @@ class EDSR(object):
 	"""
 
 	def train(self,decay_steps=1000,decay_rate=0.9,iterations=4000,save_dir="saved_models"):
-		for i in range(5):
-			with tf.device('/gpu:%d' %i ):
-				with tf.name_scope('crossvalidation%d' %i):
-			#Removing previous save directory if there is one
-					if os.path.exists(save_dir):
-						shutil.rmtree(save_dir)
-					#Make new save directory
-					os.mkdir(save_dir)
-					#Just a tf thing, to merge all summaries into one
-					merged = tf.summary.merge_all()
+		#Removing previous save directory if there is one
+		if os.path.exists(save_dir):
+			shutil.rmtree(save_dir)
+		#Make new save directory
+		os.mkdir(save_dir)
+		#Just a tf thing, to merge all summaries into one
+		merged = tf.summary.merge_all()
 
 		init = tf.global_variables_initializer()
 		print("Begin training...")
