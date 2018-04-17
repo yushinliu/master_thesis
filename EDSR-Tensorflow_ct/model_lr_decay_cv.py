@@ -137,7 +137,7 @@ class EDSR(object):
 					#Using adam optimizer as mentioned in the paper
 					optimizer = tf.train.AdamOptimizer(learning_rate)
 					#This is the train operation for our objective
-					train_op = optimizer.minimize(self.loss)	
+					self.train_op = optimizer.minimize(self.loss)	
 					#Operation to initialize all variables
 		print("Done building!")
 	
@@ -274,7 +274,7 @@ class EDSR(object):
 
 				}
 				#Run the train op and calculate the train summary
-				summary,_ = sess.run([merged,train_op],feed)
+				summary,_ = sess.run([merged,self.train_op],feed)
 				#If we're testing, don't train on test set. But do calculate summary
 				
 				if test_exists:
