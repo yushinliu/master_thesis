@@ -87,7 +87,7 @@ class EDSR(object):
 					scaling_factor = 0.1
 					
 					#Add the residual blocks to the model
-					for i in range(num_layers):
+					for index_1 in range(num_layers):
 						x = utils.resBlock(x,feature_size,scale=scaling_factor)
 
 					#One more convolution, and then we add the output of our first conv layer
