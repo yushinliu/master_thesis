@@ -24,10 +24,9 @@ class EDSR(object):
 		self.decay_steps = decay_steps
 		self.decay_rate=decay_rate
 		self.iterations=iterations
-		tf.reset_default_graph()
 		print("Building EDSR...")
 		for i in range(5):
-			with tf.device('/gpu:%d' %i ):
+			with tf.Graph().as_default(),tf.device('/gpu:%d' %i ):
 				with tf.name_scope('crossvalidation%d' %i):
 					#print("Building EDSR...")
 					self.img_size = img_size

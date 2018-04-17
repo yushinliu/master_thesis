@@ -24,11 +24,11 @@ class EDSR(object):
 		self.decay_steps = decay_steps
 		self.decay_rate=decay_rate
 		self.iterations=iterations
-		tf.reset_default_graph()
 		print("Building EDSR...")
 		for i in range(5):
-			with tf.device('/gpu:%d' %i ):
+			with tf.Graph().as_default(),tf.device('/gpu:%d' %i ):
 				with tf.name_scope('crossvalidation%d' %i):
+					tf.reset_default_graph()
 					#print("Building EDSR...")
 					self.img_size = img_size
 					self.scale = scale
@@ -251,9 +251,9 @@ class EDSR(object):
 			
 
 			#This is our training loop
-			process_bar=ShowProcess(iterations)
+			process_bar=ShowProcess(self.iterations)
 			start=time.time()
-			for i in range(iterations):
+			for i in range(self.iterations):
 				process_bar.show_process()
 				if i % 500 == 0:
 					print("\r the time cost is %f minute"%((time.time()-start)/60))
