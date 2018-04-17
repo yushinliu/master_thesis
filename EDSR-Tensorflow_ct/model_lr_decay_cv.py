@@ -21,6 +21,9 @@ super-resolution of images as described in:
 class EDSR(object):
 
 	def __init__(self,img_size=32,num_layers=32,feature_size=256,scale=2,decay_steps=1000,decay_rate=0.9,iterations=4000,output_channels=1):
+		self.decay_steps = decay_steps
+		self.decay_rate=decay_rate
+		self.iterations=iterations
 		tf.reset_default_graph()
 		print("Building EDSR...")
 		for i in range(5):
@@ -226,12 +229,12 @@ class EDSR(object):
 			sess.run(init)
 			test_exists = self.test_data
 			#create summary writer for train
-			train_writer = tf.summary.FileWriter(save_dir+"/train"+"_lr_iter_"+str(iterations)+"_decaysteps_"+str(decay_steps)+"_decay_rate_"+str(decay_rate),sess.graph)
+			train_writer = tf.summary.FileWriter(save_dir+"/train"+"_lr_iter_"+str(self.iterations)+"_decaysteps_"+str(self.decay_steps)+"_decay_rate_"+str(self.decay_rate),sess.graph)
 
 			#If we're using a test set, include another summary writer for that
 			
 			if test_exists:
-				test_writer = tf.summary.FileWriter(save_dir+"/test"+"_lr_iter_"+str(iterations)+"_decaysteps_"+str(decay_steps)+"_decay_rate_"+str(decay_rate),sess.graph)
+				test_writer = tf.summary.FileWriter(save_dir+"/test"+"_lr_iter_"+str(self.iterations)+"_decaysteps_"+str(self.decay_steps)+"_decay_rate_"+str(self.decay_rate),sess.graph)
 				test_x,test_y = self.test_data(self.test_args)
 				test_feed = {					
 					'crossvalidation0/x:0':np.array(test_x[0]),
@@ -248,9 +251,9 @@ class EDSR(object):
 			
 
 			#This is our training loop
-			process_bar=ShowProcess(iterations)
+			process_bar=ShowProcess(self.iterations)
 			start=time.time()
-			for i in range(iterations):
+			for i in range(self.iterations):
 				process_bar.show_process()
 				if i % 500 == 0:
 					print("\r the time cost is %f minute"%((time.time()-start)/60))
