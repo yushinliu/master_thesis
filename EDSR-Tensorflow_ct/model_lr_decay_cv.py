@@ -139,6 +139,7 @@ class EDSR(object):
 					#This is the train operation for our objective
 					self.train_op = optimizer.minimize(self.loss)	
 					#Operation to initialize all variables
+					self.init =  = tf.global_variables_initializer()
 					# Reuse variables for the next tower.
 					tf.get_variable_scope().reuse_variables()
 
@@ -222,7 +223,6 @@ class EDSR(object):
 		#Just a tf thing, to merge all summaries into one
 		merged = tf.summary.merge_all()
 
-		init = tf.global_variables_initializer()
 		print("Begin training...")
 		with self.sess as sess:
 			

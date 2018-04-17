@@ -139,6 +139,9 @@ class EDSR(object):
 					#This is the train operation for our objective
 					self.train_op = optimizer.minimize(self.loss)	
 					#Operation to initialize all variables
+					# Reuse variables for the next tower.
+					tf.get_variable_scope().reuse_variables()
+
 		print("Done building!")
 	
 	"""
