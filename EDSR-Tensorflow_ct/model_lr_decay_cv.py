@@ -125,6 +125,18 @@ class EDSR(object):
 					config=tf.ConfigProto(allow_soft_placement=True)
 					self.sess = tf.Session(config=config)#config = config)#config=tf.ConfigProto(allow_soft_placement=True,log_device_placement=True)) # allow_soft_placement : allow to change the instrument if not exist
 					self.saver = tf.train.Saver()
+
+					#add the decayed learning rate 
+					initial_learning_rate=0.001
+					learning_rate=tf.train.exponential_decay(initial_learning_rate,\
+					global_step=iterations,decay_steps=decay_steps,decay_rate=decay_rate)
+
+
+					#Using adam optimizer as mentioned in the paper
+					optimizer = tf.train.AdamOptimizer(learning_rate)
+					#This is the train operation for our objective
+					train_op = optimizer.minimize(self.loss)	
+					#Operation to initialize all variables
 		print("Done building!")
 	
 	"""
@@ -197,28 +209,14 @@ class EDSR(object):
 	"""
 
 	def train(self,decay_steps=1000,decay_rate=0.9,iterations=4000,save_dir="saved_models"):
-		for i in range(5):
-			with tf.device('/gpu:%d' %i ):
-				with tf.name_scope('crossvalidation%d' %i):
-			#Removing previous save directory if there is one
-					if os.path.exists(save_dir):
-						shutil.rmtree(save_dir)
-					#Make new save directory
-					os.mkdir(save_dir)
-					#Just a tf thing, to merge all summaries into one
-					merged = tf.summary.merge_all()
+		#Removing previous save directory if there is one
+		if os.path.exists(save_dir):
+			shutil.rmtree(save_dir)
+		#Make new save directory
+		os.mkdir(save_dir)
+		#Just a tf thing, to merge all summaries into one
+		merged = tf.summary.merge_all()
 
-					#add the decayed learning rate 
-					initial_learning_rate=0.001
-					learning_rate=tf.train.exponential_decay(initial_learning_rate,\
-					global_step=iterations,decay_steps=decay_steps,decay_rate=decay_rate)
-
-
-					#Using adam optimizer as mentioned in the paper
-					optimizer = tf.train.AdamOptimizer(learning_rate)
-					#This is the train operation for our objective
-					train_op = optimizer.minimize(self.loss)	
-					#Operation to initialize all variables
 		init = tf.global_variables_initializer()
 		print("Begin training...")
 		with self.sess as sess:
