@@ -1,11 +1,8 @@
-import tensorflow.contrib.slim as slim
+
 import scipy.misc
 import tensorflow as tf
-#from tqdm import tqdm
-from process_bar import ShowProcess
 import numpy as np
 import shutil
-import utils
 import os
 import time 
 from sklearn.model_selection import KFold

@@ -89,7 +89,7 @@ def get_test_set(shrunk_size):
 	for dataset in test_set:
 		x = [change_image(scipy.misc.imresize(q,(shrunk_size,shrunk_size))) for q in dataset]
 		x_set.append(x)
-		y = [change_image(q) for q in test_set]
+		y = [change_image(q) for q in dataset]
 		y_set.append(y)
 
 	return x_set,y_set

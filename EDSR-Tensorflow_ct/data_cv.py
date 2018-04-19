@@ -18,8 +18,8 @@ data_dir: path to directory containing images
 """
 def load_dataset(data_dir,target=['battery','PCB','BioStone']):
 	global dataset
-	global train_set
-	global test_set
+	#global train_set
+	#global test_set
 
 	train_set=[]
 	test_set=[]
