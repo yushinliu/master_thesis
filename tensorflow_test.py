@@ -29,6 +29,7 @@ def test(data):
 		sess.run(init)
 		print("y is ")
 		print(sess.run(y,feed_dict={'cv0/x:0':data[0],'cv1/x:0':data[1],'cv2/x:0':data[2],'cv3/x:0':data[3],'cv4/x:0':data[4]}))
+		tf.train.Saver.save(sess,"./model")
 		writer.close()
 
 def main(SEED):
