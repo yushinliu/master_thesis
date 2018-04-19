@@ -25,6 +25,8 @@ class EDSR(object):
 		self.decay_rate=decay_rate
 		self.iterations=iterations
 		print("Building EDSR...")
+		op_set=[]
+		#init_set=[]
 		with tf.variable_scope(tf.get_variable_scope()):
 			for i in range(5):
 				with tf.Graph().as_default(),tf.device('/gpu:%d' %i ):
@@ -126,7 +128,7 @@ class EDSR(object):
 						#config = tf.ConfigProto()
 						#config.gpu_options.per_process_gpu_memory_fraction = 0.8
 						#config=tf.ConfigProto(allow_soft_placement=True)
-						self.sess = tf.Session()config=config)#config = config)#config=tf.ConfigProto(allow_soft_placement=True,log_device_placement=True)) # allow_soft_placement : allow to change the instrument if not exist
+						self.sess = tf.Session()#config=config)#config = config)#config=tf.ConfigProto(allow_soft_placement=True,log_device_placement=True)) # allow_soft_placement : allow to change the instrument if not exist
 						self.saver = tf.train.Saver()
 
 						#add the decayed learning rate 
@@ -138,10 +140,14 @@ class EDSR(object):
 						#Using adam optimizer as mentioned in the paper
 						optimizer = tf.train.AdamOptimizer(learning_rate)
 						#This is the train operation for our objective
-						self.train_op = optimizer.minimize(self.loss)	
+						train_op = optimizer.minimize(self.loss)
+						
+						op_set.append(train_op)
 						#Operation to initialize all variables
 						# Reuse variables for the next tower.
 						#tf.get_variable_scope().reuse_variables()
+		self.train_op=tf.group(op_set)
+		self.init= tf.global_variables_initializer()
 
 		print("Done building!")
 	
@@ -223,14 +229,12 @@ class EDSR(object):
 		#Just a tf thing, to merge all summaries into one
 		merged = tf.summary.merge_all()
 
-		init = tf.global_variables_initializer()
-
 		print("Begin training...")
 		with self.sess as sess:
 			
 
 			#Initialize all variables
-			sess.run(init)
+			sess.run(self.init)
 			test_exists = self.test_data
 			#create summary writer for train
 			train_writer = tf.summary.FileWriter(save_dir+"/train"+"_lr_iter_"+str(self.iterations)+"_decaysteps_"+str(self.decay_steps)+"_decay_rate_"+str(self.decay_rate),sess.graph)
