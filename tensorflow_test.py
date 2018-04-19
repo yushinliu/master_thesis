@@ -24,14 +24,16 @@ def test(data):
 				y = tf.matmul(x,x)
 	init = tf.initialize_all_variables()
 	sess = tf.Session()
-	summary_writer = tf.train.SummaryWriter('log_simple_test', sess.graph)
 	with sess as sess:
+		writer=tf.summary.FileWriter("test_graph",sess.graph)
 		sess.run(init)
 		print("y is ")
 		print(sess.run(y,feed_dict={'cv0/x:0':data[0],'cv1/x:0':data[1],'cv2/x:0':data[2],'cv3/x:0':data[3],'cv4/x:0':data[4]}))
+		writer.close()
 
 def main(SEED):
 	dataset=cv_data(SEED)
 	test(dataset)
 
 
+main(SEED)
