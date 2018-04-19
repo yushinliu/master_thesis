@@ -128,8 +128,8 @@ class EDSR(object):
 						#config = tf.ConfigProto()
 						#config.gpu_options.per_process_gpu_memory_fraction = 0.8
 						#config=tf.ConfigProto(allow_soft_placement=True)
-						self.sess = tf.Session()#config=config)#config = config)#config=tf.ConfigProto(allow_soft_placement=True,log_device_placement=True)) # allow_soft_placement : allow to change the instrument if not exist
-						self.saver = tf.train.Saver()
+						#self.sess = tf.Session()#config=config)#config = config)#config=tf.ConfigProto(allow_soft_placement=True,log_device_placement=True)) # allow_soft_placement : allow to change the instrument if not exist
+						#self.saver = tf.train.Saver()
 
 						#add the decayed learning rate 
 						initial_learning_rate=0.001
@@ -148,6 +148,8 @@ class EDSR(object):
 						#tf.get_variable_scope().reuse_variables()
 		self.train_op=tf.group(op_set)
 		self.init= tf.global_variables_initializer()
+		self.sess=tf.Session()
+		self.saver = tf.train.Saver()
 
 		print("Done building!")
 	
