@@ -11,7 +11,7 @@ network.set_data_fn(get_batch,(500,60),get_test_set,60)
 network.train()
 '''
 
-#os.environ['CUDA_VISIBLE_DEVICES'] ='2,3,4,5,6'
+os.environ['CUDA_VISIBLE_DEVICES'] ='2,3,4,5,6'
 for dataset in ['battery','PCB','BioStone']: #gridsearch in different batch size
 	X_train,X_test=load_dataset("/home/liuyn/masterthesis/master_thesis/dataset",target=[dataset]) #arg: (dir,batch_number)
 	batch_index = 0
