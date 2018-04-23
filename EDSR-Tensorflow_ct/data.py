@@ -94,7 +94,7 @@ to the first (size x size) pixels in the image.
 
 returns the test set of your data
 """
-def get_test_set(shrunk_size):
+def get_test_set(shrunk_size,test_set):
 	"""for i in range(len(test_set)):
 		img = scipy.misc.imread(test_set[i])
 		if img.shape:
@@ -125,11 +125,12 @@ returns x,y where:
 	-x is the input set of shape [-1,shrunk_size,shrunk_size,channels]
 	-y is the target set of shape [-1,original_size,original_size,channels]
 """
-def get_batch(batch_size,shrunk_size):
+def get_batch(batch_size,shrunk_size,train_set):
 	global batch_index
 
 	target_img = []
 	input_img = []
+	#print(len(train_set))
 
 	max_counter = len(train_set)/batch_size
 	counter = batch_index % max_counter

@@ -226,7 +226,7 @@ class EDSR(object):
 			
 			if test_exists:
 				test_writer = tf.summary.FileWriter(save_dir+"/test"+"_lr_iter_"+str(iterations)+"_decaysteps_"+str(decay_steps)+"_decay_rate_"+str(decay_rate),sess.graph)
-				test_x,test_y = self.test_data(self.test_args)
+				test_x,test_y = self.test_data(*self.test_args)
 				test_feed = {self.input:test_x,self.target:test_y}
 			
 

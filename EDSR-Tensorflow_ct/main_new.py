@@ -11,19 +11,17 @@ network.set_data_fn(get_batch,(500,60),get_test_set,60)
 network.train()
 '''
 
-os.environ['CUDA_VISIBLE_DEVICES'] ='3,4,5,6,7'
-global train_set
-global test_set
+os.environ['CUDA_VISIBLE_DEVICES'] ='2,3,4,5,6'
 for dataset in ['battery','PCB','BioStone']: #gridsearch in different batch size
 	X_train,X_test=load_dataset("/home/liuyn/masterthesis/master_thesis/dataset",target=[dataset]) #arg: (dir,batch_number)
 	for index in range(len(X_train)):
-		train_set = X_train
-		test_set = X_test
+		train_set = list(X_train[index])
+		test_set = list(X_test[index])
 		batch_index = 0
 		print("dataset is "+str(dataset)+" cross_val "+str(index))
 		network=EDSR(60,16,64,2) #ONE BASELINE
-		network.set_data_fn(get_batch,(10,60),get_test_set,60)
-		input_img,target_img,output_img=network.train(300,0.9,5000,save_dir="saved_models_"+str(dataset)+"cross_val_"+str(index))
-		psnr_set=psnr(output_img,input_img,target_img,save_dir="saved_models_"+str(dataset)"cross_val_"+str(index))
-		dist_diagram(psnr_set,save_dir="saved_models_"+str(dataset)"cross_val_"+str(index))
+		network.set_data_fn(get_batch,(10,60,train_set),get_test_set,(60,test_set))
+		input_img,target_img,output_img=network.train(300,0.9,5000,save_dir="saved_models_"+str(dataset)+"_cross_val_"+str(index))
+		psnr_set=psnr(output_img,input_img,target_img,save_dir="saved_models_"+str(dataset)+"_cross_val_"+str(index))
+		dist_diagram(psnr_set,save_dir="saved_models_"+str(dataset)+"_cross_val_"+str(index))
 
