@@ -116,9 +116,10 @@ class EDSR(object):
 		#tf.summary.image("output_image_noconv",tf.cast(self.out_noconv,tf.uint8))
 		
 		#Tensorflow graph setup... session, saver, etc.
-		#config = tf.ConfigProto()
+		config = tf.ConfigProto()
 		#config.gpu_options.per_process_gpu_memory_fraction = 0.8
-		self.sess = tf.Session()#config = config)#config=tf.ConfigProto(allow_soft_placement=True,log_device_placement=True)) # allow_soft_placement : allow to change the instrument if not exist
+		config.gpu_options.allow_growth=True  #adaptive
+		self.sess = tf.Session(config = config)#config=tf.ConfigProto(allow_soft_placement=True,log_device_placement=True)) # allow_soft_placement : allow to change the instrument if not exist
 		self.saver = tf.train.Saver()
 		print("Done building!")
 	
@@ -226,7 +227,7 @@ class EDSR(object):
 			
 			if test_exists:
 				test_writer = tf.summary.FileWriter(save_dir+"/test"+"_lr_iter_"+str(iterations)+"_decaysteps_"+str(decay_steps)+"_decay_rate_"+str(decay_rate),sess.graph)
-				test_x,test_y = self.test_data(*self.test_args)
+				test_x,test_y = self.test_data(self.test_args)
 				test_feed = {self.input:test_x,self.target:test_y}
 			
 

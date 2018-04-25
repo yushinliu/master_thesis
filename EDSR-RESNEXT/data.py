@@ -36,22 +36,25 @@ def load_dataset(data_dir,target=['battery','PCB','BioStone']):
 		for items in name_set:
 			img_set = []
 			count = 0
-			for img in os.listdir(str(data_dir)+"//DATASET-Train-augmented-120//new_set_2//"+str(items)):
+			for img in os.listdir(str(data_dir)+"//DATASET-Train-augmented-120//new_set_3//"+str(items)):
 			#	for img in os.listdir(str(data_dir)+"//DATASET-Train-augmented-120//"+str(items)+"//"+str(addr_1)):
 					#print("img",img)
 				count +=1
-				img_set.append(scipy.misc.imread(str(data_dir)+"//DATASET-Train-augmented-120//new_set_2//"+str(items)+"//"+str(img)))
+				img_set.append(scipy.misc.imread(str(data_dir)+"//DATASET-Train-augmented-120//new_set_3//"+str(items)+"//"+str(img)))
 			print(" the "+str(items)+" is "+str(count))
 			random.seed(SEED)
 			random.shuffle(img_set)
-			imgs[items] = img_set[:800]
+			imgs[items] = img_set
 		print("train data extract finsihed")
 	except:
 		print("train wrong")
-
+	length = np.int(len(imgs[items])*0.3)
 	for items in name_set:
-		train_set.extend(imgs[items])
+		test_set.extend(imgs[items][:length])
+		train_set.extend(imgs[items][length:])
 	random.shuffle(train_set)
+	random.shuffle(test_set)
+	'''
 
 	"""
 	extract the TEST data
@@ -74,14 +77,18 @@ def load_dataset(data_dir,target=['battery','PCB','BioStone']):
 	except:
 		print("test wrong")
 	'''
+	'''
 	for items in name_set:
 		dataset = train_set[items]
 		batch_size[items] = np.int(len(dataset)/batch_number)
 	print(batch_size)
 	'''
+	'''
 	for items in name_set:
 		test_set.extend(imgs[items])
 	random.shuffle(test_set)
+
+	'''
 
 	return train_set,test_set
 
@@ -94,7 +101,7 @@ to the first (size x size) pixels in the image.
 
 returns the test set of your data
 """
-def get_test_set(shrunk_size,test_set):
+def get_test_set(shrunk_size):
 	"""for i in range(len(test_set)):
 		img = scipy.misc.imread(test_set[i])
 		if img.shape:
@@ -125,7 +132,7 @@ returns x,y where:
 	-x is the input set of shape [-1,shrunk_size,shrunk_size,channels]
 	-y is the target set of shape [-1,original_size,original_size,channels]
 """
-def get_batch(batch_size,shrunk_size,train_set):
+def get_batch(batch_size,shrunk_size):
 	global batch_index
 
 	target_img = []
