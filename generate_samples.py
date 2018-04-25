@@ -7,7 +7,13 @@ import os
 #from cv2 import imread,imwrite
 import shutil
 
+list_dir="competitions//cvpr-2018-autonomous-driving//train_video_list"
+img_dir="competitions//cvpr-2018-autonomous-driving"
+save_dir="cvpr_wad"
 
+'''
+extract the imgs from videos with certain ratio
+'''
 def extract_data(list_dir):
     img={}
     try:
@@ -22,10 +28,12 @@ def extract_data(list_dir):
             train_set=train_id[:np.int(len(train_id)*0.05)]
             img[addr]=train_set
     except:
-        print("errors occur")
+        print("extract erros occur")
     return img
 
-
+'''
+relocate the imgs
+'''
 def re_allocate(img,img_dir,save_dir):
     os.makedir(save_dir+"//train_color")
     os.makedir(save_dir+"//train_label")
@@ -36,11 +44,13 @@ def re_allocate(img,img_dir,save_dir):
                 label_name=img_name[:-4]+"_instanceIds.png"
                 shutil.copy(img_dir+"//"+"train_label"+"//"+label_name,save_dir+"//label_color")
     except:
-        print("errors occur")
+        print("reallocate errors occur")
 
 
 """
 generate data start
 """
 img=extract_data(list_dir)
+print("extract finished")
 re_allocate(img,img_dir,save_dir)
+print("allocate finished")
