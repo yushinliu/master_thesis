@@ -42,7 +42,7 @@ def re_allocate(img,img_dir,save_dir):
             for img_name in img[id]:
                 shutil.copy(img_dir+"//"+"train_color"+"//"+img_name,save_dir+"//train_color")
                 label_name=img_name[:-4]+"_instanceIds.png"
-                shutil.copy(img_dir+"//"+"train_label"+"//"+label_name,save_dir+"//label_color")
+                shutil.copy(img_dir+"//"+"train_label"+"//"+label_name,save_dir+"//train_label")
     except:
         print("reallocate errors occur")
 
