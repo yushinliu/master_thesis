@@ -1,0 +1,37 @@
+import tensorflow.contrib.slim as slim
+import scipy.misc
+import tensorflow as tf
+#from tqdm import tqdm
+from process_bar import ShowProcess
+import numpy as np
+import shutil
+import utils
+import os
+import time 
+
+class ResGUN_2X(object):
+
+	def __init__(self,img_size=32,num_layers=32,feature_size=256,scale=2,output_channels=1):
+		tf.reset_default_graph()
+		print("Building EDSR...")
+		self.img_size = img_size
+		self.scale = scale
+		self.output_channels = output_channels
+
+		#Placeholder for image inputs
+		self.input = x = tf.placeholder(tf.float32,[None,img_size,img_size,output_channels])
+		#Placeholder for upscaled image ground-truth
+		self.target = y = tf.placeholder(tf.float32,[None,img_size*scale,img_size*scale,output_channels])
+	
+		"""
+		Preprocessing as mentioned in the paper, by subtracting the mean
+		However, the subtract the mean of the entire dataset they use. As of
+		now, I am subtracting the mean of each batch
+		"""
+		mean_x =tf.reduce_mean(self.input) #127
+		image_input =x- mean_x
+		mean_y =tf.reduce_mean(self.target) #127
+		image_target =y- mean_y 
+
+		#Build input layer
+		x = slim.conv2d(image_input,feature_size,[3,3])
