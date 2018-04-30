@@ -1,19 +1,18 @@
 import tensorflow.contrib.slim as slim
 import scipy.misc
 import tensorflow as tf
-#from tqdm import tqdm
-from process_bar import ShowProcess
+from tqdm import tqdm
 import numpy as np
 import shutil
-import utils
+from utils import *
 import os
 import time 
 
 class ResGUN_2X(object):
 
-	def __init__(self,img_size=32,num_layers=32,feature_size=256,scale=2,output_channels=1):
+	def __init__(self,img_size=32,num_layers=32,channels=256,scale=2,output_channels=1):
 		tf.reset_default_graph()
-		print("Building EDSR...")
+		print("Building ResGun_2x...")
 		self.img_size = img_size
 		self.scale = scale
 		self.output_channels = output_channels
@@ -34,13 +33,14 @@ class ResGUN_2X(object):
 		image_target =y- mean_y 
 
 		#Build input layer
-		x = slim.conv2d(image_input,feature_size,[3,3])
+		x = slim.conv2d(image_input,channels,[3,3])
 		x = tf.nn.relu(X)
 
-		#middle steps
+		#middle steps using EDSR as Baseline
 		for i in range(steps):
-			x = EDSR_block()
+			x = EDSR_block(x,step_size=10,num_layers=16,channels=64,scale=0.1)
 		
+		# outputlayer
 		output = x 
 
 		self.out = tf.clip_by_value(output+mean_x,0.0,255.0)  # compress all the output+mean_x into 0.0,255.0
@@ -48,7 +48,7 @@ class ResGUN_2X(object):
 		self.loss = loss = tf.reduce_mean(tf.losses.absolute_difference(image_target,output))
 	
 		#Calculating Peak Signal-to-noise-ratio
-		#Using equations from here: https://en.wikipedia.org/wiki/Peak_signal-to-noise_ratio
+		#Using equations from here: https://en.wikipedia.org/wiki/Peak_signal-to-noise_ratios
 		mse = tf.reduce_mean(tf.squared_difference(image_target,output))	
 		PSNR = tf.constant(255**2,dtype=tf.float32)/mse
 		PSNR = tf.constant(10,dtype=tf.float32)*utils.log10(PSNR)
@@ -162,8 +162,6 @@ class ResGUN_2X(object):
 		init = tf.global_variables_initializer()
 		print("Begin training...")
 		with self.sess as sess:
-			
-
 			#Initialize all variables
 			sess.run(init)
 			test_exists = self.test_data
@@ -179,12 +177,7 @@ class ResGUN_2X(object):
 			
 
 			#This is our training loop
-			process_bar=ShowProcess(iterations)
-			start=time.time()
-			for i in range(iterations):
-				process_bar.show_process()
-				if i % 500 == 0:
-					print("\r the time cost is %f minute"%((time.time()-start)/60))
+			for i in tqdm(range(iterations)):
 				#Use the data function we were passed to get a batch every iteration
 				x,y,batch_index = self.data(*self.args) #execute the get_batch function each iteration(almost 20 batch in one epoch)
 				#print("the batch index is ", batch_index)
@@ -207,7 +200,6 @@ class ResGUN_2X(object):
 				
 				#Write train summary for this step
 				train_writer.add_summary(summary,i)
-			process_bar.close()
 			#Save our trained model		
 			self.save()	
 			train_writer.close() 

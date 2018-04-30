@@ -1,5 +1,6 @@
 import tensorflow as tf
 import tensorflow.contrib.slim as slim
+import tf.nn.conv2d_transpose as conv_transpose
 
 """
 Creates a convolutional residual block
@@ -94,6 +95,14 @@ def log10(x):
   denominator = tf.log(tf.constant(10, dtype=numerator.dtype))
   return numerator / denominator
 
+# deconv2d layer : in order to upsampling
+#'same'padding:out_height = ceil(float(in_height) / float(strides[1])),out_width = ceil(float(in_width) / float(strides[2]))
+#'valid' padding:out_height = ceil(float(in_height - filter_height + 1) / float(strides[1])),out_width = ceil(float(in_width - filter_width + 1) / float(strides[2]))
+
+def deconv2d(x,step_size,output_shape=None,num_layers=64,kernel_size=[3,3],padding='VALID'):
+	fliter_shape=[
+	output_shape=[
+	output
 
 def EDSR_block(input_size,step_size,num_layers=16,channels=64,scale=1):
 	conv_1 = x
@@ -101,5 +110,6 @@ def EDSR_block(input_size,step_size,num_layers=16,channels=64,scale=1):
 		x = resblock(x,channels=channels,scale=scale)
 	x += conv_1
 	output_size = input_size+step_size
+
 
 	return

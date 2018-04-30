@@ -94,13 +94,14 @@ def get_batch(batch_size,shrunk_size):
 
 	max_counter = len(train_set)/batch_size
 	counter = batch_index % max_counter
-
+	print(counter)
 	imgs = train_set[batch_size*int(counter):batch_size*(int(counter)+1)]
 	x = [change_image(scipy.misc.imresize(q,(shrunk_size,shrunk_size))) for q in imgs]
+	print("yes")
 	y = [change_image(q) for q in imgs] 
 
 	batch_index = (batch_index+1) % max_counter
-	return x,y,batch_index  #x,y is the list of batch image
+	return x,y,batch_index
 
 """
 Simple method to crop center of image
