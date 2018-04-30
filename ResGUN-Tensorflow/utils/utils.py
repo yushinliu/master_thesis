@@ -1,7 +1,6 @@
 import tensorflow as tf
 import tensorflow.contrib.slim as slim
-import tf.nn.conv2d_transpose as conv_transpose
-
+import numpy as np
 """
 Creates a convolutional residual block
 as defined in the paper. More on
@@ -99,18 +98,19 @@ def log10(x):
 #'same'padding:out_height = ceil(float(in_height) / float(strides[1])),out_width = ceil(float(in_width) / float(strides[2]))
 #'valid' padding:out_height = ceil(float(in_height - filter_height + 1) / float(strides[1])),out_width = ceil(float(in_width - filter_width + 1) / float(strides[2]))
 
-def deconv2d(x,step_size,filter,output_shape=None,num_layers=64,padding='VALID'):
-	input_shape=x.get_shape()
-	output_shape=[input_shape[0],input_shape[1]+step_size,input_shape[2]+step_size,num_layers]
-	strides = [1,1,1,1]
-	return tf.nn.conv2d_transpose(x,filter,output_shape=output_shape,strides=strides,padding=padding)
+def deconv2d(x,step_size,output_shape=None,channels=64,padding='VALID'):
+	kernel_size=(step_size+1,step_size+1)
+	strides=(1,1)
+	return tf.layers.conv2d_transpose(x,filters=channels,kernel_size=kernel_size,strides=strides,padding=padding)
 
-def EDSR_block(x,step_size,num_layers=16,channels=64,scale=1):
+def EDSR_block(x,last,step_size,num_layers=16,channels=64,scale=1):
 	conv_1 = x
 	for i in range(num_layers):
-		x = resblock(x,channels=channels,scale=scale)
+		x = resBlock(x,channels=channels,scale=scale)
 	x += conv_1
-	input_shape = x.get_shape()
-	filter = tf.get_variable("conv_transpose",[input_shape[0],step_size+1,step_size+1,input_shape[3]])
-	x = deconv2d(x,step_size,filter)
+	if last:
+		x = deconv2d(x,step_size,channels=3)
+		print(x.get_shape())
+	else:
+		x = deconv2d(x,step_size,channels=channels)
 	return x

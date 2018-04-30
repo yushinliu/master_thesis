@@ -1,18 +1,23 @@
 import tensorflow.contrib.slim as slim
+import os
+import time 
 import scipy.misc
 import tensorflow as tf
 from tqdm import tqdm
 import numpy as np
 import shutil
-from utils import *
+
+#internal import
+from utils.utils import *
+from utils.data import *
 import os
 import time 
 
-class ResGUN_2X(object):
+class ResGUN(object):
 
-	def __init__(self,img_size=32,num_layers=32,channels=256,scale=2,output_channels=1):
+	def __init__(self,img_size=32,num_layers=32,channels=256,scale=2,output_channels=3,steps=5,batch_size=10):
 		tf.reset_default_graph()
-		print("Building ResGun_2x...")
+		print("Building ResGun...")
 		self.img_size = img_size
 		self.scale = scale
 		self.output_channels = output_channels
@@ -34,14 +39,17 @@ class ResGUN_2X(object):
 
 		#Build input layer
 		x = slim.conv2d(image_input,channels,[3,3])
-		x = tf.nn.relu(X)
+		x = tf.nn.relu(x)
 
 		#middle steps using EDSR as Baseline
 		for i in range(steps):
-			x = EDSR_block(x,step_size=10,num_layers=16,channels=64,scale=0.1)
+			if i == steps-1:
+				x = EDSR_block(x,last=True,step_size=10,num_layers=16,channels=64,scale=0.1)
+			else:
+				x = EDSR_block(x,last=False,step_size=10,num_layers=16,channels=64,scale=0.1)
 		
 		# outputlayer
-		output = x 
+		output = x
 
 		self.out = tf.clip_by_value(output+mean_x,0.0,255.0)  # compress all the output+mean_x into 0.0,255.0
 
@@ -51,7 +59,7 @@ class ResGUN_2X(object):
 		#Using equations from here: https://en.wikipedia.org/wiki/Peak_signal-to-noise_ratios
 		mse = tf.reduce_mean(tf.squared_difference(image_target,output))	
 		PSNR = tf.constant(255**2,dtype=tf.float32)/mse
-		PSNR = tf.constant(10,dtype=tf.float32)*utils.log10(PSNR)
+		PSNR = tf.constant(10,dtype=tf.float32)*log10(PSNR)
 	
 		#Scalar to keep track for loss
 		tf.summary.scalar("loss",self.loss)

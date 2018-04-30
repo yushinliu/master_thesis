@@ -63,11 +63,12 @@ returns the test set of your data
 """
 def get_test_set(shrunk_size):
 
-	x = [change_image(scipy.misc.imresize(q,(shrunk_size,shrunk_size))) for q in test_set]
-	y = [change_image(q) for q in test_set]
+	x = [scipy.misc.imresize(q,(shrunk_size,shrunk_size)) for q in test_set]
+	y = [q for q in test_set]
 
 	return x,y
 
+#change_image only for ct image
 def change_image(imgtuple):
 	img = imgtuple[:,:,np.newaxis]
 	return img
@@ -96,8 +97,8 @@ def get_batch(batch_size,shrunk_size):
 	counter = batch_index % max_counter
 
 	imgs = train_set[batch_size*int(counter):batch_size*(int(counter)+1)]
-	x = [change_image(scipy.misc.imresize(q,(shrunk_size,shrunk_size))) for q in imgs]
-	y = [change_image(q) for q in imgs] 
+	x = [scipy.misc.imresize(q,(shrunk_size,shrunk_size)) for q in imgs]
+	y = [q for q in imgs] 
 
 	batch_index = (batch_index+1) % max_counter
 	return x,y,batch_index  #x,y is the list of batch image
