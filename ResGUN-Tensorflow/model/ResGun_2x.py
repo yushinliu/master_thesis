@@ -44,9 +44,9 @@ class ResGUN(object):
 		#middle steps using EDSR as Baseline
 		for i in range(steps):
 			if i == steps-1:
-				x = EDSR_block(x,last=True,step_size=10,num_layers=16,channels=64,scale=0.1)
+				x = EDSR_block(x,last=True,step_size=10,num_layers=num_layers,channels=channels,scale=0.1)
 			else:
-				x = EDSR_block(x,last=False,step_size=10,num_layers=16,channels=64,scale=0.1)
+				x = EDSR_block(x,last=False,step_size=10,num_layers=num_layers,channels=channels,scale=0.1)
 		
 		# outputlayer
 		output = x
