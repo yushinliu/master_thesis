@@ -12,8 +12,10 @@ stride: convolution stride
 """
 def resBlock(x,channels=64,kernel_size=[3,3],scale=1):
 	tmp = slim.conv2d(x,channels,kernel_size,activation_fn=None)
+	tmp = slim.batch_norm(tmp) # SRResnet 
 	tmp = tf.nn.relu(tmp)
 	tmp = slim.conv2d(tmp,channels,kernel_size,activation_fn=None)
+	tmp = slim.batch_norm(tmp) # SRResnet
 	tmp *= scale
 	return x + tmp
 

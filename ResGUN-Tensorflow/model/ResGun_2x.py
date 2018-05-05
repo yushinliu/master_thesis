@@ -83,7 +83,7 @@ class ResGUN(object):
 	"""
 	def save(self,savedir='saved_models'):
 		print("Saving...")
-		self.saver.save(self.sess,savedir+"/model")
+		self.saver.save(self.sess,savedir+"/model",,global_step=1000)
 		print("Saved!")
 		
 	"""
@@ -106,6 +106,7 @@ class ResGUN(object):
 			new super-resolution image and return that
 
 	return  	For the second case, we return a numpy array of shape [n,input_size*scale,input_size*scale,3]
+	"""
 	"""
 	def predict(self,x):
 		print("Predicting...")
@@ -133,6 +134,9 @@ class ResGUN(object):
 			return tmp_image
 		else:
 			return self.sess.run(self.out,feed_dict={self.input:x})
+	"""
+	def predict(self,x):
+		return self.sess.run(self.out,feed_dict={self.input:x})
 
 	"""
 	Function to setup your input data pipeline
@@ -208,8 +212,8 @@ class ResGUN(object):
 				
 				#Write train summary for this step
 				train_writer.add_summary(summary,i)
+				self.save(savedir=save_dir)	
 			#Save our trained model		
-			self.save()	
 			train_writer.close() 
 			test_writer.close()
 		return input_img,target_img,output_img

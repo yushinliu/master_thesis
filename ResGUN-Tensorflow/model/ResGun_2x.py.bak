@@ -59,7 +59,7 @@ class ResGUN(object):
 		#Using equations from here: https://en.wikipedia.org/wiki/Peak_signal-to-noise_ratios
 		mse = tf.reduce_mean(tf.squared_difference(image_target,output))	
 		PSNR = tf.constant(255**2,dtype=tf.float32)/mse
-		PSNR = tf.constant(10,dtype=tf.float32)*utils.log10(PSNR)
+		PSNR = tf.constant(10,dtype=tf.float32)*log10(PSNR)
 	
 		#Scalar to keep track for loss
 		tf.summary.scalar("loss",self.loss)
@@ -107,6 +107,7 @@ class ResGUN(object):
 
 	return  	For the second case, we return a numpy array of shape [n,input_size*scale,input_size*scale,3]
 	"""
+	"""
 	def predict(self,x):
 		print("Predicting...")
 		if (len(x.shape) == 3) and not(x.shape[0] == self.img_size and x.shape[1] == self.img_size):
@@ -133,6 +134,9 @@ class ResGUN(object):
 			return tmp_image
 		else:
 			return self.sess.run(self.out,feed_dict={self.input:x})
+	"""
+	def predict(self,x):
+		return self.sess.run(self.out,feed_dict={self.input:x})
 
 	"""
 	Function to setup your input data pipeline

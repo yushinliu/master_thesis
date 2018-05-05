@@ -12,8 +12,10 @@ stride: convolution stride
 """
 def resBlock(x,channels=64,kernel_size=[3,3],scale=1):
 	tmp = slim.conv2d(x,channels,kernel_size,activation_fn=None)
+	tmp = slim.batch_norm(tmp) # SRResnet 
 	tmp = tf.nn.relu(tmp)
 	tmp = slim.conv2d(tmp,channels,kernel_size,activation_fn=None)
+	tmp = slim.batch_norm(tmp)
 	tmp *= scale
 	return x + tmp
 
@@ -110,6 +112,7 @@ def EDSR_block(x,last,step_size,num_layers=16,channels=64,scale=1):
 	x += conv_1
 	if last:
 		x = deconv2d(x,step_size,channels=3)
+		print(x.get_shape())
 	else:
 		x = deconv2d(x,step_size,channels=channels)
 	return x
