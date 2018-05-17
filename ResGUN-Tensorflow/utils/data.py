@@ -44,13 +44,14 @@ def load_dataset(data_dir, img_size):
 				imgs.append(tmp[coord[0]*img_size:(coord[0]+1)*img_size,coord[1]*img_size:(coord[1]+1)*img_size,:])
 		except:
 			print ("oops")
-	test_size = min(100,int( len(imgs)*0.2))
-	print(test_size)
-	random.seed(SEED)
-	random.shuffle(imgs)
-	test_set = imgs[:test_size]
-	train_set = imgs[test_size:][:800]
-	return train_set,test_set
+        print(len(imgs))
+        test_size = min(100,int( len(imgs)*0.2))
+        #print(test_size)
+        random.seed(SEED)
+        random.shuffle(imgs)
+        test_set = imgs[:test_size]
+        train_set = imgs[test_size:][:800]
+        return train_set,test_set
 
 """
 Get test set from the loaded dataset

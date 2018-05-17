@@ -12,10 +12,10 @@ stride: convolution stride
 """
 def resBlock(x,channels=64,kernel_size=[3,3],scale=1):
 	tmp = slim.conv2d(x,channels,kernel_size,activation_fn=None)
-	tmp = slim.batch_norm(tmp) # SRResnet batch_norm
+	#tmp = slim.batch_norm(tmp) # SRResnet batch_norm
 	tmp = tf.nn.relu(tmp)
 	tmp = slim.conv2d(tmp,channels,kernel_size,activation_fn=None)
-	tmp = slim.batch_norm(tmp) # SRResnet batch_norm
+	#tmp = slim.batch_norm(tmp) # SRResnet batch_norm
 	tmp *= scale
 	return x + tmp
 
@@ -42,10 +42,10 @@ def upsample(x,scale=2,features=64,activation=tf.nn.relu):
 	assert scale in [2,3,4]
 	x = slim.conv2d(x,features,[3,3],activation_fn=activation)
 	if scale == 2:
-		ps_features = 1*(scale**2)
+		ps_features = 3*(scale**2) #output channels *(scale**2)
 		x = slim.conv2d(x,ps_features,[3,3],activation_fn=activation)
 		#x = slim.conv2d_transpose(x,ps_features,6,stride=1,activation_fn=activation)
-		x = PS(x,2,color=False)
+		x = PS(x,2,color=True)
 	elif scale == 3:
 		ps_features =3*(scale**2)
 		x = slim.conv2d(x,ps_features,[3,3],activation_fn=activation)
@@ -106,21 +106,34 @@ def deconv2d(x,step_size,output_shape=None,channels=64,padding='VALID'):
 	return tf.layers.conv2d_transpose(x,filters=channels,kernel_size=kernel_size,strides=strides,padding=padding)
 
 def resize(x,step_size,channels=64):
-        shape=x.get_shape().as_list()
-        x=tf.image.resize_bicubic(x,[shape[1]+step_size,shape[2]+step_size])
-        x=slim.conv2d(x,channels=channels,[3,3],activation_fn=None)
-        return x
+    #x = slim.conv2d(x,64,[3,3],activation_fn=None)
+    shape=x.get_shape().as_list()
+    x=tf.image.resize_bicubic(x,[shape[1]+step_size,shape[2]+step_size])
+    #x=slim.conv2d(x,channels,[3,3],activation_fn=None)
+    return x
 
 def EDSR_block(x,last,step_size,num_layers=16,channels=64,scale=1):
-	conv_1 = x
-	for i in range(num_layers):
-		x = resBlock(x,channels=channels,scale=scale)
-	x += conv_1
-	if last:
+        x = slim.conv2d(x,channels,[3,3],activation_fn=None)
+        conv_1 = x
+        for i in range(num_layers):
+            x = resBlock(x,channels=channels,scale=scale)
+        x = slim.conv2d(x,channels,[3,3],activation_fn=None)
+        x += conv_1
+        
+        if last:
+                #x = upsample(x,scale=2,features=channels)
                 x = resize(x,step_size,channels=3)
-		#x = deconv2d(x,step_size,channels=3)
-		#print(x.get_shape())
-	else:
-		x = resize(x,step_size,channels=channels)
+                #x = deconv2d(x,step_size,channels=3)
+                #print(x.get_shape())
+        else:
+                #x = upsample(x,scale=2,features=channels)
+                x = resize(x,step_size,channels=channels)
                 #x = deconv2d(x,step_size,channels=channels)
-	return x
+        return x
+
+def conv_block(x,step_size,num_layers=4,channels=64):
+    x = resize(x,step_size,channels=channels)
+    for i in range(num_layers-1):
+        x = slim.conv2d(x,channels,[3,3],activation_fn=None)
+    x = slim.conv2d(x,channels,[1,1])
+    return x
