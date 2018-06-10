@@ -1,6 +1,11 @@
 import tensorflow as tf
 import tensorflow.contrib.slim as slim
 import numpy as np
+
+"""
+set up the batch_norm_params
+"""
+batch_norm_params = {'is_training':True,'decay':0.95}     
 """
 Creates a convolutional residual block
 as defined in the paper. More on
@@ -134,6 +139,6 @@ def EDSR_block(x,last,step_size,num_layers=16,channels=64,scale=1):
 def conv_block(x,step_size,num_layers=4,channels=64):
     x = resize(x,step_size,channels=channels)
     for i in range(num_layers-1):
-        x = slim.conv2d(x,channels,[3,3],activation_fn=None)
-    x = slim.conv2d(x,channels,[1,1])
+        x = slim.conv2d(x,channels,[3,3],activation_fn=tf.nn.relu,normalizer_fn=slim.batch_norm,normalizer_params=batch_norm_params)
+    x = slim.conv2d(x,channels,[1,1],activation_fn=tf.nn.relu,normalizer_fn=slim.batch_norm,normalizer_params=batch_norm_params)
     return x

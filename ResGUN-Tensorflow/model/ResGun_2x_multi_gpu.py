@@ -13,9 +13,18 @@ from utils.data import *
 import os
 import time 
 
+#gradient 
 class ResGUN(object):
 
     def __init__(self,img_size=32,num_layers=32,channels=256,scale=4,output_channels=3,steps=5,batch_size=10):
+        #add the decayed learning rate 
+        initial_learning_rate=0.001
+        learning_rate=tf.train.exponential_decay(initial_learning_rate,\
+        global_step=iterations,decay_steps=decay_steps,decay_rate=decay_rate)
+
+
+        #Using adam optimizer as mentioned in the paper
+        optimizer = tf.train.AdamOptimizer(learning_rate)
         tf.reset_default_graph()
         print("Building ResGun...")
         self.img_size = img_size
@@ -113,6 +122,34 @@ class ResGUN(object):
     return      For the second case, we return a numpy array of shape [n,input_size*scale,input_size*scale,3]
     """
     """
+    def predict(self,x):
+        print("Predicting...")
+        if (len(x.shape) == 3) and not(x.shape[0] == self.img_size and x.shape[1] == self.img_size):
+            num_across = x.shape[0]//self.img_size
+            num_down = x.shape[1]//self.img_size
+            tmp_image = np.zeros([x.shape[0]*self.scale,x.shape[1]*self.scale,3])
+            for i in range(num_across):
+                for j in range(num_down):
+                    tmp = self.sess.run(self.out,feed_dict={self.input:[x[i*self.img_size:(i+1)*self.img_size,j*self.img_size:(j+1)*self.img_size]]})[0]
+                    tmp_image[i*tmp.shape[0]:(i+1)*tmp.shape[0],j*tmp.shape[1]:(j+1)*tmp.shape[1]] = tmp
+            #this added section fixes bottom right corner when testing
+            if (x.shape[0]%self.img_size != 0 and  x.shape[1]%self.img_size != 0):
+                tmp = self.sess.run(self.out,feed_dict={self.input:[x[-1*self.img_size:,-1*self.img_size:]]})[0]
+                tmp_image[-1*tmp.shape[0]:,-1*tmp.shape[1]:] = tmp
+                    
+            if x.shape[0]%self.img_size != 0:
+                for j in range(num_down):
+                    tmp = self.sess.run(self.out,feed_dict={self.input:[x[-1*self.img_size:,j*self.img_size:(j+1)*self.img_size]]})[0]
+                    tmp_image[-1*tmp.shape[0]:,j*tmp.shape[1]:(j+1)*tmp.shape[1]] = tmp
+            if x.shape[1]%self.img_size != 0:
+                for j in range(num_across):
+                                        tmp = self.sess.run(self.out,feed_dict={self.input:[x[j*self.img_size:(j+1)*self.img_size,-1*self.img_size:]]})[0]
+                                        tmp_image[j*tmp.shape[0]:(j+1)*tmp.shape[0],-1*tmp.shape[1]:] = tmp
+            return tmp_image
+        else:
+            return self.sess.run(self.out,feed_dict={self.input:x})
+    """
+    """
     Function to setup your input data pipeline
     """
     def set_data_fn(self,fn,args,test_set_fn=None,test_set_args=None):
@@ -125,7 +162,7 @@ class ResGUN(object):
     Train the neural network
     """
 
-    def train(self,decay_steps=1000,decay_rate=0.9,iterations=4000,save_dir="saved_models",resume=False,resume_dir=''):
+    def train(self,decay_steps=1000,decay_rate=0.9,iterations=4000,save_dir="saved_models"):
         #Removing previous save directory if there is one
         if os.path.exists(save_dir):
             shutil.rmtree(save_dir)
@@ -134,15 +171,6 @@ class ResGUN(object):
         #Just a tf thing, to merge all summaries into one
         merged = tf.summary.merge_all()
 
-        #add the decayed learning rate 
-        initial_learning_rate=0.00003486784
-        learning_rate=tf.train.exponential_decay(initial_learning_rate,\
-        global_step=iterations,decay_steps=decay_steps,decay_rate=decay_rate)
-
-
-        #Using adam optimizer as mentioned in the paper
-        optimizer = tf.train.MomentumOptimizer(learning_rate,momentum=0.9)
-        #optimizer = tf.train.AdamOptimizer(learning_rate)
         #This is the train operation for our objective
         train_op = optimizer.minimize(self.loss)    
         #Operation to initialize all variables
@@ -151,8 +179,6 @@ class ResGUN(object):
         with self.sess as sess:
             #Initialize all variables
             sess.run(init)
-            if resume:
-               self.resume(savedir=resume_dir)
             test_exists = self.test_data
             #create summary writer for train
             train_writer = tf.summary.FileWriter(save_dir+"/train"+"_lr_iter_"+str(iterations)+"_decaysteps_"+str(decay_steps)+"_decay_rate_"+str(decay_rate),sess.graph)

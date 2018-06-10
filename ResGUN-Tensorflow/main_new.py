@@ -9,13 +9,14 @@ network=EDSR(60,16,64,2) #ONE BASELINE
 network.set_data_fn(get_batch,(500,60),get_test_set,60)
 network.train()
 '''
-
-os.environ['CUDA_VISIBLE_DEVICES'] ='7'
-#load_dataset("D://LAB//master_thesis//dataset//General-100",100) #arg: (dir,batch_number)
-load_dataset("/home/liuyn/masterthesis/master_thesis/dataset/General-100",100) #arg: (dir,img_size)
-network=ResGUN(50,4,64,2) #ONE BASELINE
-network.set_data_fn(get_batch,(16,50),get_test_set,(50))
-input_img,target_img,output_img=network.train(300,0.95,6000,save_dir="saved_models_general100_origin_2")
-psnr_set=psnr(output_img,input_img,target_img,save_dir="saved_models_general100_origin_2")
-dist_diagram(psnr_set,save_dir="saved_models_general100_origin_2")
+if __name__ == "__main__":
+   resume_dir = "/home/liuyn/masterthesis/master_thesis/ResGUN-Tensorflow/saved_models_general100_augmentated_newepoch_batch_size_64_1"
+   os.environ['CUDA_VISIBLE_DEVICES'] ='1'
+   #load_dataset("D://LAB//master_thesis//dataset//General-100",100) #arg: (dir,batch_number)
+   load_dataset("/home/liuyn/masterthesis/master_thesis/dataset/Training",40) #arg: (dir,img_size)
+   network=ResGUN(20,4,64,2) #ONE BASELINE
+   network.set_data_fn(get_batch,(64,20),get_test_set,(20))
+   input_img,target_img,output_img=network.train(1800,0.9,18000,save_dir="saved_models_general100_augmentated_newepoch_batch_size_64_2",resume=True,resume_dir=resume_dir)
+   psnr_set=psnr(output_img,input_img,target_img,save_dir="saved_models_general100_augmentated_newepoch_batch_size_64_2")
+   dist_diagram(psnr_set,save_dir="saved_models_general100_augmentated_newepoch_batch_size_64_2")
 
