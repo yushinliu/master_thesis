@@ -11,11 +11,58 @@ import os
 import numpy as np
 import scipy
 import scipy.misc
+from skimage.io import imread
+from skimage import exposure
 
 train_set = []
 test_set = []
 batch_index = 0
 
+"""
+data augmentation
+"""
+def rotation(image, random_flip=True):  
+    if random_flip : #and np.random.choice([True, False]):  
+        w,h = image.shape[1], image.shape[0]  
+        # 0-360 random generate rotation 
+        angle = np.random.randint(0,360)  
+        RotateMatrix = cv2.getRotationMatrix2D(center=(image.shape[1]/2, image.shape[0]/2), angle=angle, scale=0.7)  
+        # image = cv2.warpAffine(image, RotateMatrix, (w,h), borderValue=(129,137,130))  
+        #image = cv2.warpAffine(image, RotateMatrix, (w,h),borderValue=(129,137,130))  
+        image = cv2.warpAffine(image, RotateMatrix, (w,h),borderMode=cv2.BORDER_REPLICATE)  
+    return image  
+  
+def gen_exposure(image, random_xp=True):  
+    if random_xp and np.random.choice([True, False]):  
+        image = exposure.adjust_gamma(image, 1.2) # darker
+    if random_xp and np.random.choice([True, False]):  
+        image = exposure.adjust_gamma(image, 1.5) #  darker
+    if random_xp and np.random.choice([True, False]):  
+        image = exposure.adjust_gamma(image, 0.9) # brighter  
+    if random_xp and np.random.choice([True, False]):  
+        image = exposure.adjust_gamma(image, 0.8) # brighter
+    if random_xp and np.random.choice([True, False]):  
+        image = exposure.adjust_gamma(image, 0.7) # darker 
+    return image  
+
+def data_augmentation(train_image):#,multi_num=3):
+    temp = train_image.copy()
+    print("data augmentation start")
+    for img in temp:
+		# fliping 
+        train_image.append(cv2.flip(img,0))
+        train_image.append(cv2.flip(img,1))
+        train_image.append(cv2.flip(img,-1))
+    """
+        for i in range(multi_num):
+            #print(img.shape)
+            image=rotation(img)
+            image=gen_exposure(image)
+            train_image.append(image)
+    """
+    print("data augmentation end")
+    return train_image
+    
 """
 Load set of images in a directory.
 This will automatically allocate a 
@@ -35,7 +82,7 @@ def load_dataset(data_dir, img_size):
     for img in img_files:
         try:
             #print("good")
-            tmp= cv2.imread(data_dir+"//"+img) #read each image
+            tmp= imread(data_dir+"//"+img) #read each image
             x,y,z = tmp.shape
             coords_x = x / img_size
             coords_y = y/img_size
@@ -44,14 +91,18 @@ def load_dataset(data_dir, img_size):
                 imgs.append(tmp[coord[0]*img_size:(coord[0]+1)*img_size,coord[1]*img_size:(coord[1]+1)*img_size,:])
         except:
             print ("oops")
-        print(len(imgs))
-        test_size = min(100,int( len(imgs)*0.2))
-        #print(test_size)
-        random.seed(SEED)
-        random.shuffle(imgs)
-        test_set = imgs[:test_size]
-        train_set = imgs[test_size:][:800]
-        return train_set,test_set
+    #print(len(imgs))
+    test_size = min(100,int( len(imgs)*0.1))
+    #print(test_size)
+    random.seed(SEED)
+    random.shuffle(imgs)
+    test_set = imgs[:test_size]
+    train_set = imgs[test_size:]
+    train_set = data_augmentation(train_set)#,multi_num=10)
+    random.shuffle(train_set)
+    print(len(train_set))
+    return train_set,test_set
+
 
 """
 Get test set from the loaded dataset

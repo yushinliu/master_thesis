@@ -11,6 +11,7 @@ import os
 import numpy as np
 import scipy
 import scipy.misc
+from skimage.io import imread
 from skimage import exposure
 
 train_set = []
@@ -44,15 +45,21 @@ def gen_exposure(image, random_xp=True):
         image = exposure.adjust_gamma(image, 0.7) # darker 
     return image  
 
-def data_augmentation(train_image,multi_num=3):
+def data_augmentation(train_image):#,multi_num=3):
     temp = train_image.copy()
     print("data augmentation start")
     for img in temp:
+		# fliping 
+        train_image.append(cv2.flip(img,0))
+        train_image.append(cv2.flip(img,1))
+        train_image.append(cv2.flip(img,-1))
+    """
         for i in range(multi_num):
             #print(img.shape)
             image=rotation(img)
             image=gen_exposure(image)
             train_image.append(image)
+    """
     print("data augmentation end")
     return train_image
     
@@ -75,7 +82,7 @@ def load_dataset(data_dir, img_size):
     for img in img_files:
         try:
             #print("good")
-            tmp= cv2.imread(data_dir+"//"+img) #read each image
+            tmp= imread(data_dir+"//"+img) #read each image
             x,y,z = tmp.shape
             coords_x = x / img_size
             coords_y = y/img_size
@@ -91,7 +98,7 @@ def load_dataset(data_dir, img_size):
     random.shuffle(imgs)
     test_set = imgs[:test_size]
     train_set = imgs[test_size:]
-    train_set = data_augmentation(train_set,multi_num=10)
+    train_set = data_augmentation(train_set)#,multi_num=10)
     random.shuffle(train_set)
     print(len(train_set))
     return train_set,test_set
@@ -108,7 +115,7 @@ returns the test set of your data
 """
 def get_test_set(shrunk_size):
 
-    x = [scipy.misc.imresize(q,(shrunk_size,shrunk_size)) for q in test_set]
+    x = [cv2.resize(q,(shrunk_size,shrunk_size),interpolation=cv2.INTER_CUBIC) for q in test_set]
     y = [q for q in test_set]
 
     return x,y
@@ -142,7 +149,7 @@ def get_batch(batch_size,shrunk_size):
     counter = batch_index % max_counter
 
     imgs = train_set[batch_size*int(counter):batch_size*(int(counter)+1)]
-    x = [scipy.misc.imresize(q,(shrunk_size,shrunk_size)) for q in imgs]
+    x = [cv2.resize(q,(shrunk_size,shrunk_size),interpolation=cv2.INTER_CUBIC) for q in imgs]
     y = [q for q in imgs] 
 
     batch_index = (batch_index+1) % max_counter
